@@ -66,7 +66,7 @@ A full-featured restaurant review platform built with Laravel 10 backend API and
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/YOUR_USERNAME/foodiehub.git
+   git clone https://github.com/anonyname5/foodiehub.git
    cd foodiehub
    ```
 
