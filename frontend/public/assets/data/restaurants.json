@@ -1,0 +1,260 @@
+{
+  "restaurants": [
+    {
+      "id": 1,
+      "name": "Jalan Alor Food Street",
+      "cuisine": "Malaysian Street Food",
+      "rating": 4.6,
+      "reviewCount": 324,
+      "priceRange": "$",
+      "location": "Bukit Bintang, Kuala Lumpur",
+      "address": "Jalan Alor, Bukit Bintang, 50200 Kuala Lumpur, Federal Territory of Kuala Lumpur",
+      "phone": "+603-2144 3297",
+      "hours": {
+        "monday": "6:00 PM - 2:00 AM",
+        "tuesday": "6:00 PM - 2:00 AM",
+        "wednesday": "6:00 PM - 2:00 AM",
+        "thursday": "6:00 PM - 2:00 AM",
+        "friday": "6:00 PM - 3:00 AM",
+        "saturday": "6:00 PM - 3:00 AM",
+        "sunday": "6:00 PM - 2:00 AM"
+      },
+      "image": "https://images.unsplash.com/photo-1559847844-5315695dadae?w=400&h=300&fit=crop",
+      "images": [
+        "https://images.unsplash.com/photo-1559847844-5315695dadae?w=800&h=600&fit=crop",
+        "https://images.unsplash.com/photo-1558618047-c8b1bec9c4e3?w=800&h=600&fit=crop",
+        "https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?w=800&h=600&fit=crop"
+      ],
+      "description": "Famous street food destination featuring satay, char kway teow, Hokkien mee, and various local delicacies. A bustling night market atmosphere with authentic Malaysian flavors.",
+      "features": ["Street Food", "Late Night", "Outdoor Seating", "Cash Only", "Local Favorites"],
+      "coordinates": {
+        "lat": 3.1478,
+        "lng": 101.7123
+      }
+    },
+    {
+      "id": 2,
+      "name": "Restaurant Rebung Chef Ismail",
+      "cuisine": "Traditional Malay",
+      "rating": 4.5,
+      "reviewCount": 189,
+      "priceRange": "$$",
+      "location": "Bangsar, Kuala Lumpur",
+      "address": "7, Lorong Maarof, Bangsar, 59000 Kuala Lumpur, Federal Territory of Kuala Lumpur",
+      "phone": "+603-2287 8359",
+      "hours": {
+        "monday": "12:00 PM - 3:00 PM, 7:00 PM - 11:00 PM",
+        "tuesday": "12:00 PM - 3:00 PM, 7:00 PM - 11:00 PM",
+        "wednesday": "12:00 PM - 3:00 PM, 7:00 PM - 11:00 PM",
+        "thursday": "12:00 PM - 3:00 PM, 7:00 PM - 11:00 PM",
+        "friday": "12:00 PM - 3:00 PM, 7:00 PM - 11:00 PM",
+        "saturday": "12:00 PM - 3:00 PM, 7:00 PM - 11:00 PM",
+        "sunday": "12:00 PM - 3:00 PM, 7:00 PM - 11:00 PM"
+      },
+      "image": "https://images.unsplash.com/photo-1596040033229-a9821ebd058d?w=400&h=300&fit=crop",
+      "images": [
+        "https://images.unsplash.com/photo-1596040033229-a9821ebd058d?w=800&h=600&fit=crop",
+        "https://images.unsplash.com/photo-1551218808-94e220e084d2?w=800&h=600&fit=crop",
+        "https://images.unsplash.com/photo-1558618047-c8b1bec9c4e3?w=800&h=600&fit=crop"
+      ],
+      "description": "Chef Ismail's renowned restaurant serving authentic Malay cuisine with a modern presentation. Famous for rendang, nasi kerabu, and traditional kuih desserts.",
+      "features": ["Fine Dining", "Reservations Recommended", "Halal", "Air Conditioned", "Traditional Recipes"],
+      "coordinates": {
+        "lat": 3.1281,
+        "lng": 101.6669
+      }
+    },
+    {
+      "id": 3,
+      "name": "Gurney Drive Hawker Centre",
+      "cuisine": "Penang Street Food",
+      "rating": 4.7,
+      "reviewCount": 456,
+      "priceRange": "$",
+      "location": "George Town, Penang",
+      "address": "Gurney Dr, George Town, 10250 George Town, Pulau Pinang",
+      "phone": "+604-261 6161",
+      "hours": {
+        "monday": "6:00 PM - 1:00 AM",
+        "tuesday": "6:00 PM - 1:00 AM",
+        "wednesday": "6:00 PM - 1:00 AM",
+        "thursday": "6:00 PM - 1:00 AM",
+        "friday": "6:00 PM - 2:00 AM",
+        "saturday": "6:00 PM - 2:00 AM",
+        "sunday": "6:00 PM - 1:00 AM"
+      },
+      "image": "https://images.unsplash.com/photo-1547592180-85f173990554?w=400&h=300&fit=crop",
+      "images": [
+        "https://images.unsplash.com/photo-1547592180-85f173990554?w=800&h=600&fit=crop",
+        "https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?w=800&h=600&fit=crop",
+        "https://images.unsplash.com/photo-1559847844-5315695dadae?w=800&h=600&fit=crop"
+      ],
+      "description": "Famous hawker centre offering the best Penang street food including assam laksa, char kway teow, rojak, and cendol. Seaside dining with spectacular sunset views.",
+      "features": ["Hawker Centre", "Sea View", "Street Food", "Cash Only", "Local Institution"],
+      "coordinates": {
+        "lat": 5.4382,
+        "lng": 100.3094
+      }
+    },
+    {
+      "id": 4,
+      "name": "Auntie Gaik Lean's Old School Eatery",
+      "cuisine": "Nyonya Peranakan",
+      "rating": 4.8,
+      "reviewCount": 278,
+      "priceRange": "$$",
+      "location": "George Town, Penang",
+      "address": "1, Bishop St, George Town, 10200 George Town, Pulau Pinang",
+      "phone": "+604-261 2626",
+      "hours": {
+        "monday": "Closed",
+        "tuesday": "11:30 AM - 2:30 PM, 5:30 PM - 9:30 PM",
+        "wednesday": "11:30 AM - 2:30 PM, 5:30 PM - 9:30 PM",
+        "thursday": "11:30 AM - 2:30 PM, 5:30 PM - 9:30 PM",
+        "friday": "11:30 AM - 2:30 PM, 5:30 PM - 9:30 PM",
+        "saturday": "11:30 AM - 2:30 PM, 5:30 PM - 9:30 PM",
+        "sunday": "11:30 AM - 2:30 PM, 5:30 PM - 9:30 PM"
+      },
+      "image": "https://images.unsplash.com/photo-1551218808-94e220e084d2?w=400&h=300&fit=crop",
+      "images": [
+        "https://images.unsplash.com/photo-1551218808-94e220e084d2?w=800&h=600&fit=crop",
+        "https://images.unsplash.com/photo-1596040033229-a9821ebd058d?w=800&h=600&fit=crop",
+        "https://images.unsplash.com/photo-1558618047-c8b1bec9c4e3?w=800&h=600&fit=crop"
+      ],
+      "description": "Michelin-starred Nyonya restaurant serving authentic Peranakan dishes. Famous for ayam pongteh, jiu hu char, and nyonya laksa in a charming heritage shophouse.",
+      "features": ["Michelin Star", "Heritage Building", "Authentic Nyonya", "Reservations Required", "Air Conditioned"],
+      "coordinates": {
+        "lat": 5.4164,
+        "lng": 100.3327
+      }
+    },
+    {
+      "id": 5,
+      "name": "Hiap Joo Bakery & Biscuit Factory",
+      "cuisine": "Local Bakery",
+      "rating": 4.4,
+      "reviewCount": 167,
+      "priceRange": "$",
+      "location": "Johor Bahru, Johor",
+      "address": "13, 15, Jln Tan Hiok Nee, Bandar Johor Bahru, 80000 Johor Bahru, Johor",
+      "phone": "+607-224 6475",
+      "hours": {
+        "monday": "6:30 AM - 6:30 PM",
+        "tuesday": "6:30 AM - 6:30 PM",
+        "wednesday": "6:30 AM - 6:30 PM",
+        "thursday": "6:30 AM - 6:30 PM",
+        "friday": "6:30 AM - 6:30 PM",
+        "saturday": "6:30 AM - 6:30 PM",
+        "sunday": "6:30 AM - 6:30 PM"
+      },
+      "image": "https://images.unsplash.com/photo-1509440159596-0249088772ff?w=400&h=300&fit=crop",
+      "images": [
+        "https://images.unsplash.com/photo-1509440159596-0249088772ff?w=800&h=600&fit=crop",
+        "https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=800&h=600&fit=crop",
+        "https://images.unsplash.com/photo-1555507036-ab794f1d3ff3?w=800&h=600&fit=crop"
+      ],
+      "description": "Historic bakery established in 1919, famous for traditional banana cake, kaya toast, and local coffee. A heritage institution preserving old-school baking methods.",
+      "features": ["Historic Bakery", "Traditional Recipes", "Kaya Toast", "Local Coffee", "Heritage Building"],
+      "coordinates": {
+        "lat": 1.4581,
+        "lng": 103.7618
+      }
+    },
+    {
+      "id": 6,
+      "name": "Top Spot Food Court",
+      "cuisine": "Sarawakian Seafood",
+      "rating": 4.3,
+      "reviewCount": 298,
+      "priceRange": "$$",
+      "location": "Kuching, Sarawak",
+      "address": "Jln Padang, Kuching, 93100 Kuching, Sarawak",
+      "phone": "+608-223 3681",
+      "hours": {
+        "monday": "5:00 PM - 11:00 PM",
+        "tuesday": "5:00 PM - 11:00 PM",
+        "wednesday": "5:00 PM - 11:00 PM",
+        "thursday": "5:00 PM - 11:00 PM",
+        "friday": "5:00 PM - 12:00 AM",
+        "saturday": "5:00 PM - 12:00 AM",
+        "sunday": "5:00 PM - 11:00 PM"
+      },
+      "image": "https://images.unsplash.com/photo-1559847844-5315695dadae?w=400&h=300&fit=crop",
+      "images": [
+        "https://images.unsplash.com/photo-1559847844-5315695dadae?w=800&h=600&fit=crop",
+        "https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?w=800&h=600&fit=crop",
+        "https://images.unsplash.com/photo-1547592180-85f173990554?w=800&h=600&fit=crop"
+      ],
+      "description": "Famous rooftop food court specializing in fresh seafood and Sarawakian dishes. Known for butter prawns, midin fern, and kampua noodles with panoramic city views.",
+      "features": ["Rooftop Dining", "Fresh Seafood", "City View", "Sarawakian Cuisine", "Open Air"],
+      "coordinates": {
+        "lat": 1.5541,
+        "lng": 110.3592
+      }
+    },
+    {
+      "id": 7,
+      "name": "Restaurant Yusof Dan Zakhir",
+      "cuisine": "Indian Muslim",
+      "rating": 4.6,
+      "reviewCount": 203,
+      "priceRange": "$",
+      "location": "Alor Setar, Kedah",
+      "address": "Jalan Putra, 05100 Alor Setar, Kedah",
+      "phone": "+604-731 7336",
+      "hours": {
+        "monday": "6:00 AM - 10:00 PM",
+        "tuesday": "6:00 AM - 10:00 PM",
+        "wednesday": "6:00 AM - 10:00 PM",
+        "thursday": "6:00 AM - 10:00 PM",
+        "friday": "6:00 AM - 10:00 PM",
+        "saturday": "6:00 AM - 10:00 PM",
+        "sunday": "6:00 AM - 10:00 PM"
+      },
+      "image": "https://images.unsplash.com/photo-1585937421612-70a008356fbe?w=400&h=300&fit=crop",
+      "images": [
+        "https://images.unsplash.com/photo-1585937421612-70a008356fbe?w=800&h=600&fit=crop",
+        "https://images.unsplash.com/photo-1596040033229-a9821ebd058d?w=800&h=600&fit=crop",
+        "https://images.unsplash.com/photo-1551218808-94e220e084d2?w=800&h=600&fit=crop"
+      ],
+      "description": "Legendary nasi kandar restaurant serving authentic North Malaysian Indian Muslim cuisine. Famous for their aromatic curries, tender meat dishes, and fluffy naan bread.",
+      "features": ["Nasi Kandar", "Halal", "Authentic Curries", "Local Institution", "24/7 Service"],
+      "coordinates": {
+        "lat": 6.1254,
+        "lng": 100.3673
+      }
+    },
+    {
+      "id": 8,
+      "name": "Kedai Makanan dan Minuman Chow Kit",
+      "cuisine": "Chinese Malaysian",
+      "rating": 4.5,
+      "reviewCount": 156,
+      "priceRange": "$",
+      "location": "Chow Kit, Kuala Lumpur",
+      "address": "Jalan Raja Alang, Chow Kit, 50300 Kuala Lumpur, Federal Territory of Kuala Lumpur",
+      "phone": "+603-2691 2468",
+      "hours": {
+        "monday": "7:00 AM - 3:00 PM",
+        "tuesday": "7:00 AM - 3:00 PM",
+        "wednesday": "7:00 AM - 3:00 PM",
+        "thursday": "7:00 AM - 3:00 PM",
+        "friday": "7:00 AM - 3:00 PM",
+        "saturday": "7:00 AM - 3:00 PM",
+        "sunday": "7:00 AM - 3:00 PM"
+      },
+      "image": "https://images.unsplash.com/photo-1563379091339-03246963d96a?w=400&h=300&fit=crop",
+      "images": [
+        "https://images.unsplash.com/photo-1563379091339-03246963d96a?w=800&h=600&fit=crop",
+        "https://images.unsplash.com/photo-1547592180-85f173990554?w=800&h=600&fit=crop",
+        "https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?w=800&h=600&fit=crop"
+      ],
+      "description": "Traditional Chinese kopitiam serving authentic wonton noodles, Hainanese chicken rice, and kopi. A local favorite for breakfast and lunch in the heart of KL.",
+      "features": ["Kopitiam", "Traditional Coffee", "Wonton Noodles", "Local Breakfast", "Cash Only"],
+      "coordinates": {
+        "lat": 3.1569,
+        "lng": 101.6984
+      }
+    }
+  ]
+}

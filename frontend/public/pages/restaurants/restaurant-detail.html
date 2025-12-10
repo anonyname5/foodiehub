@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Restaurant Details - FoodieHub</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="../../assets/css/style.css" rel="stylesheet">
+</head>
+<body class="bg-gray-50">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-lg sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <!-- Logo -->
+                <div class="flex items-center">
+                    <i class="fas fa-utensils text-orange-500 text-2xl mr-2"></i>
+                    <a href="../../index.html" class="text-2xl font-bold text-gray-800">FoodieHub</a>
+                </div>
+                
+                <!-- Navigation Links -->
+                <div class="hidden md:flex items-center space-x-8">
+                    <a href="../../index.html" class="text-gray-600 hover:text-orange-500 transition">Home</a>
+                    <a href="restaurants.html" class="text-gray-600 hover:text-orange-500 transition">Restaurants</a>
+                    <a href="../reviews/write-review.html" class="text-gray-600 hover:text-orange-500 transition">Write Review</a>
+                </div>
+                
+                <!-- Right side: Authentication Buttons or User Menu -->
+                <div class="hidden md:flex items-center space-x-4">
+                    <!-- Authentication Buttons -->
+                    <div class="auth-buttons flex items-center space-x-4">
+                        <button id="login-btn" class="text-gray-600 hover:text-orange-500 transition">Login</button>
+                        <button id="register-btn" class="bg-orange-500 text-white px-4 py-2 rounded-lg hover:bg-orange-600 transition">Register</button>
+                    </div>
+                    
+                    <!-- User Menu (hidden by default) -->
+                    <div class="user-menu relative hidden">
+                        <button id="user-menu-toggle" class="flex items-center space-x-3 hover:bg-gray-50 rounded-lg px-3 py-2 transition">
+                            <div class="flex flex-col text-left">
+                                <span class="text-sm font-semibold text-gray-800 user-name"></span>
+                                <span class="text-xs text-gray-500 user-email"></span>
+                            </div>
+                            <img id="user-avatar" src="" alt="User Avatar" class="w-8 h-8 rounded-full object-cover border-2 border-orange-500">
+                            <i class="fas fa-chevron-down text-gray-400 text-xs"></i>
+                        </button>
+                        
+                        <!-- Dropdown Menu -->
+                        <div id="user-dropdown" class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 hidden z-50">
+                            <div class="py-2">
+                                <a href="../profile/profile.html" class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition">
+                                    <i class="fas fa-user mr-3 text-gray-400"></i>
+                                    Profile
+                                </a>
+                                <a href="../reviews/write-review.html" class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition">
+                                    <i class="fas fa-edit mr-3 text-gray-400"></i>
+                                    Write Review
+                                </a>
+                                <hr class="my-1">
+                                <button id="logout-btn" class="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition">
+                                    <i class="fas fa-sign-out-alt mr-3 text-gray-400"></i>
+                                    Logout
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Mobile menu button -->
+                <div class="md:hidden">
+                    <button id="mobile-menu-btn" class="text-gray-600 hover:text-orange-500">
+                        <i class="fas fa-bars text-xl"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Mobile menu -->
+        <div id="mobile-menu" class="md:hidden bg-white border-t hidden">
+            <div class="px-2 pt-2 pb-3 space-y-1">
+                <a href="../../index.html" class="block px-3 py-2 text-gray-600 hover:text-orange-500">Home</a>
+                <a href="restaurants.html" class="block px-3 py-2 text-gray-600 hover:text-orange-500">Restaurants</a>
+                <a href="../reviews/write-review.html" class="block px-3 py-2 text-gray-600 hover:text-orange-500">Write Review</a>
+                
+                <!-- Mobile Auth Buttons -->
+                <div class="auth-buttons px-3 py-2 space-y-2">
+                    <button id="mobile-login-btn" class="block w-full text-left text-gray-600 hover:text-orange-500">Login</button>
+                    <button id="mobile-register-btn" class="block w-full text-left bg-orange-500 text-white px-3 py-2 rounded-lg hover:bg-orange-600">Register</button>
+                </div>
+                
+                <!-- Mobile User Menu (hidden by default) -->
+                <div class="user-menu hidden px-3 py-2">
+                    <div class="flex items-center space-x-3 mb-3">
+                        <div class="flex flex-col">
+                            <span class="text-sm font-semibold text-gray-800 user-name"></span>
+                            <span class="text-xs text-gray-500 user-email"></span>
+                        </div>
+                        <img id="mobile-user-avatar" src="" alt="User Avatar" class="w-10 h-10 rounded-full object-cover border-2 border-orange-500">
+                    </div>
+                    <div class="space-y-2">
+                        <button id="mobile-logout-btn" class="block text-gray-600 hover:text-orange-500 text-sm">Logout</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Loading State -->
+    <div id="loading" class="text-center py-20">
+        <div class="loading mx-auto mb-4"></div>
+        <p class="text-gray-600">Loading restaurant details...</p>
+    </div>
+
+    <!-- Restaurant Not Found -->
+    <div id="restaurant-not-found" class="hidden text-center py-20">
+        <i class="fas fa-utensils text-6xl text-gray-400 mb-6"></i>
+        <h1 class="text-3xl font-bold text-gray-800 mb-4">Restaurant Not Found</h1>
+        <p class="text-gray-600 mb-8">The restaurant you're looking for doesn't exist or has been removed.</p>
+        <a href="restaurants.html" class="btn-primary">Browse All Restaurants</a>
+    </div>
+
+    <!-- Restaurant Content -->
+    <div id="restaurant-content" class="hidden">
+        <!-- Restaurant Header -->
+        <div class="bg-white border-b">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+                <div class="flex flex-col lg:flex-row gap-8">
+                    <!-- Restaurant Image -->
+                    <div class="lg:w-1/2">
+                        <div class="relative">
+                            <img id="restaurant-main-image" src="" alt="" class="w-full h-64 lg:h-80 object-cover rounded-lg shadow-lg">
+                            <button id="view-gallery" class="absolute bottom-4 right-4 bg-black bg-opacity-50 text-white px-4 py-2 rounded-lg hover:bg-opacity-70 transition">
+                                <i class="fas fa-images mr-2"></i>View Gallery
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Restaurant Info -->
+                    <div class="lg:w-1/2">
+                        <div class="flex items-start justify-between mb-4">
+                            <div>
+                                <h1 id="restaurant-name" class="text-3xl md:text-4xl font-bold text-gray-800 mb-2"></h1>
+                                <p id="restaurant-cuisine" class="text-lg text-gray-600 mb-2"></p>
+                                <p id="restaurant-location" class="text-gray-500"></p>
+                            </div>
+                            <div class="text-right">
+                                <div id="restaurant-price" class="text-2xl font-bold text-orange-500 mb-2"></div>
+                                <div class="rating-display">
+                                    <div id="restaurant-rating" class="star-rating mb-2"></div>
+                                    <div class="text-sm text-gray-600">
+                                        <span id="restaurant-rating-number"></span> 
+                                        (<span id="restaurant-review-count"></span> reviews)
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <p id="restaurant-description" class="text-gray-700 mb-6"></p>
+                        
+                        <!-- Action Buttons -->
+                        <div class="flex flex-wrap gap-4 mb-6">
+                            <a id="write-review-btn" href="#" class="btn-primary">
+                                <i class="fas fa-star mr-2"></i>Write Review
+                            </a>
+                            <button id="share-btn" class="bg-gray-200 text-gray-700 px-6 py-3 rounded-lg font-semibold hover:bg-gray-300 transition">
+                                <i class="fas fa-share mr-2"></i>Share
+                            </button>
+                            <button id="favorite-btn" class="bg-gray-200 text-gray-700 px-6 py-3 rounded-lg font-semibold hover:bg-gray-300 transition">
+                                <i class="far fa-heart mr-2"></i>Save
+                            </button>
+                        </div>
+                        
+                        <!-- Quick Info -->
+                        <div class="grid grid-cols-2 gap-4 text-sm">
+                            <div class="flex items-center">
+                                <i class="fas fa-map-marker-alt text-orange-500 mr-2"></i>
+                                <span id="restaurant-address"></span>
+                            </div>
+                            <div class="flex items-center">
+                                <i class="fas fa-phone text-orange-500 mr-2"></i>
+                                <span id="restaurant-phone"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Restaurant Details -->
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <!-- Main Content -->
+                <div class="lg:col-span-2">
+                    <!-- Hours -->
+                    <div class="bg-white rounded-lg shadow-md p-6 mb-8">
+                        <div class="flex items-center mb-4">
+                            <i class="fas fa-clock text-orange-500 mr-3"></i>
+                            <h2 class="text-2xl font-bold text-gray-800">Hours</h2>
+                        </div>
+                        <div id="restaurant-hours" class="space-y-2">
+                            <!-- Hours will be loaded here -->
+                        </div>
+                    </div>
+                    
+                    <!-- Features -->
+                    <div class="bg-white rounded-lg shadow-md p-6 mb-8">
+                        <h2 class="text-2xl font-bold text-gray-800 mb-4">Features</h2>
+                        <div id="restaurant-features" class="flex flex-wrap gap-2">
+                            <!-- Features will be loaded here -->
+                        </div>
+                    </div>
+                    
+                    <!-- Reviews Section -->
+                    <div class="bg-white rounded-lg shadow-md p-6">
+                        <div class="flex justify-between items-center mb-6">
+                            <h2 class="text-2xl font-bold text-gray-800">Reviews</h2>
+                            <div class="flex items-center space-x-4">
+                                <select id="review-sort" class="form-input py-2 px-3 text-sm">
+                                    <option value="newest">Newest First</option>
+                                    <option value="oldest">Oldest First</option>
+                                    <option value="highest">Highest Rated</option>
+                                    <option value="lowest">Lowest Rated</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <!-- Rating Breakdown -->
+                        <div id="rating-breakdown" class="mb-8 p-4 bg-gray-50 rounded-lg">
+                            <!-- Rating breakdown will be loaded here -->   
+                        </div>
+                        
+                        <!-- Reviews List -->
+                        <div id="reviews-list" class="space-y-6">
+                            <!-- Reviews will be loaded here -->
+                        </div>
+                        
+                        <!-- Load More Reviews -->
+                        <div id="load-more-reviews" class="text-center mt-8">
+                            <button id="load-more-reviews-btn" class="btn-primary">
+                                Load More Reviews
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Sidebar -->
+                <div class="lg:col-span-1">
+                    <!-- Interactive Map -->
+                    <div class="bg-white rounded-lg shadow-md p-6 mb-8">
+                        <h3 class="text-lg font-semibold text-gray-800 mb-4">Location</h3>
+                        <div id="restaurant-map" class="h-48 rounded-lg border"></div>
+                        <p id="restaurant-address-sidebar" class="text-sm text-gray-600 mt-3"></p>
+                        <a id="directions-link" href="#" target="_blank" class="inline-block mt-2 text-orange-500 hover:text-orange-600 text-sm font-medium">
+                            <i class="fas fa-directions mr-1"></i>Get Directions
+                        </a>
+                    </div>
+                    
+                    <!-- Related Restaurants -->
+                    <div class="bg-white rounded-lg shadow-md p-6">
+                        <h3 class="text-lg font-semibold text-gray-800 mb-4">Related Restaurants</h3>
+                        <div id="related-restaurants" class="space-y-4">
+                            <!-- Related restaurants will be loaded here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Image Gallery Modal -->
+    <div id="gallery-modal" class="fixed inset-0 bg-black bg-opacity-75 z-50 hidden">
+        <div class="flex items-center justify-center min-h-screen p-4">
+            <div class="bg-white rounded-lg max-w-4xl max-h-full overflow-hidden">
+                <div class="flex justify-between items-center p-4 border-b">
+                    <h3 class="text-lg font-semibold">Restaurant Gallery</h3>
+                    <button id="close-gallery" class="text-gray-500 hover:text-gray-700">
+                        <i class="fas fa-times text-xl"></i>
+                    </button>
+                </div>
+                <div class="p-4">
+                    <div id="gallery-images" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        <!-- Gallery images will be loaded here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div>
+                    <div class="flex items-center mb-4">
+                        <i class="fas fa-utensils text-orange-500 text-2xl mr-2"></i>
+                        <span class="text-2xl font-bold">FoodieHub</span>
+                    </div>
+                    <p class="text-gray-400">Discover, review, and share your favorite restaurants with fellow food lovers.</p>
+                </div>
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">Quick Links</h3>
+                    <ul class="space-y-2">
+                        <li><a href="restaurants.html" class="text-gray-400 hover:text-orange-500 transition">Browse Restaurants</a></li>
+                        <li><a href="../reviews/write-review.html" class="text-gray-400 hover:text-orange-500 transition">Write Review</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">Support</h3>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-gray-400 hover:text-orange-500 transition">Help Center</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-orange-500 transition">Contact Us</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-orange-500 transition">Privacy Policy</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">Follow Us</h3>
+                    <div class="flex space-x-4">
+                        <a href="#" class="text-gray-400 hover:text-orange-500 transition">
+                            <i class="fab fa-facebook text-xl"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-orange-500 transition">
+                            <i class="fab fa-twitter text-xl"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-orange-500 transition">
+                            <i class="fab fa-instagram text-xl"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="border-t border-gray-700 mt-8 pt-8 text-center text-gray-400">
+                <p>&copy; 2024 FoodieHub. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Login Modal -->
+    <div id="login-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center">
+        <div class="bg-white rounded-lg p-8 w-full max-w-md mx-4">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-2xl font-bold text-gray-800">Login</h2>
+                <button id="close-login-modal" class="text-gray-400 hover:text-gray-600">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            
+            <form id="login-form">
+                <div class="mb-4">
+                    <label for="login-email" class="block text-sm font-medium text-gray-700 mb-2">Email</label>
+                    <input type="email" id="login-email" name="email" required
+                           class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500">
+                </div>
+                
+                <div class="mb-6">
+                    <label for="login-password" class="block text-sm font-medium text-gray-700 mb-2">Password</label>
+                    <input type="password" id="login-password" name="password" required
+                           class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500">
+                </div>
+                
+                <button type="submit" class="w-full bg-orange-500 text-white py-2 px-4 rounded-lg hover:bg-orange-600 transition">
+                    Login
+                </button>
+            </form>
+            
+            <div class="mt-4 text-center">
+                <p class="text-gray-600">Don't have an account? 
+                    <button id="show-register-modal" class="text-orange-500 hover:text-orange-600 font-medium">Register here</button>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Register Modal -->
+    <div id="register-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center">
+        <div class="bg-white rounded-lg p-8 w-full max-w-md mx-4">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-2xl font-bold text-gray-800">Register</h2>
+                <button id="close-register-modal" class="text-gray-400 hover:text-gray-600">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            
+            <form id="register-form">
+                <div class="mb-4">
+                    <label for="register-name" class="block text-sm font-medium text-gray-700 mb-2">Full Name</label>
+                    <input type="text" id="register-name" name="name" required
+                           class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500">
+                </div>
+                
+                <div class="mb-4">
+                    <label for="register-email" class="block text-sm font-medium text-gray-700 mb-2">Email</label>
+                    <input type="email" id="register-email" name="email" required
+                           class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500">
+                </div>
+                
+                <div class="mb-4">
+                    <label for="register-password" class="block text-sm font-medium text-gray-700 mb-2">Password</label>
+                    <input type="password" id="register-password" name="password" required minlength="8"
+                           class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500">
+                </div>
+                
+                <div class="mb-6">
+                    <label for="register-password-confirm" class="block text-sm font-medium text-gray-700 mb-2">Confirm Password</label>
+                    <input type="password" id="register-password-confirm" name="password_confirmation" required minlength="8"
+                           class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500">
+                </div>
+                
+                <button type="submit" class="w-full bg-orange-500 text-white py-2 px-4 rounded-lg hover:bg-orange-600 transition">
+                    Register
+                </button>
+            </form>
+            
+            <div class="mt-4 text-center">
+                <p class="text-gray-600">Already have an account? 
+                    <button id="show-login-modal" class="text-orange-500 hover:text-orange-600 font-medium">Login here</button>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <script src="../../assets/js/api.js"></script>
+    <script src="../../assets/js/main.js"></script>
+    <script src="../../assets/js/restaurant-detail.js"></script>
+</body>
+</html>

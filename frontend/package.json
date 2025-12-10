@@ -1,0 +1,36 @@
+{
+  "name": "foodiehub-frontend",
+  "version": "1.0.0",
+  "description": "Frontend for FoodieHub restaurant review platform",
+  "main": "public/index.html",
+  "scripts": {
+    "serve": "python -m http.server 3000",
+    "serve:node": "npx serve public -p 3000",
+    "serve:php": "php -S localhost:3000 -t public",
+    "start": "npm run serve"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/YOUR_USERNAME/foodiehub.git"
+  },
+  "keywords": [
+    "restaurant",
+    "review",
+    "food",
+    "vanilla-js",
+    "tailwind",
+    "frontend"
+  ],
+  "author": "FoodieHub Team",
+  "license": "MIT",
+  "dependencies": {},
+  "devDependencies": {},
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "browserslist": [
+    "> 1%",
+    "last 2 versions",
+    "not dead"
+  ]
+}
