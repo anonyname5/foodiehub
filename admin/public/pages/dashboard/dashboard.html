@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - FoodieHub Admin</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="../../assets/css/admin.css" rel="stylesheet">
+    <link href="../../assets/css/components.css" rel="stylesheet">
+</head>
+<body class="bg-gray-50">
+    <!-- Sidebar -->
+    <aside class="admin-sidebar text-white">
+        <div class="p-6 border-b border-blue-700">
+            <div class="flex items-center">
+                <i class="fas fa-utensils text-2xl mr-3"></i>
+                <h1 class="text-xl font-bold">FoodieHub</h1>
+            </div>
+            <p class="text-blue-200 text-sm mt-1">Admin Panel</p>
+        </div>
+        
+        <nav class="p-4">
+            <a href="dashboard.html" class="admin-nav-link flex items-center px-4 py-3 rounded-lg mb-2 bg-blue-600 text-white">
+                <i class="fas fa-chart-line mr-3"></i>
+                Dashboard
+            </a>
+            <a href="../users/users.html" class="admin-nav-link flex items-center px-4 py-3 rounded-lg mb-2 text-gray-200 hover:bg-blue-700">
+                <i class="fas fa-users mr-3"></i>
+                Users
+            </a>
+            <a href="../restaurants/restaurants.html" class="admin-nav-link flex items-center px-4 py-3 rounded-lg mb-2 text-gray-200 hover:bg-blue-700">
+                <i class="fas fa-store mr-3"></i>
+                Restaurants
+            </a>
+            <a href="../reviews/reviews.html" class="admin-nav-link flex items-center px-4 py-3 rounded-lg mb-2 text-gray-200 hover:bg-blue-700">
+                <i class="fas fa-star mr-3"></i>
+                Reviews
+            </a>
+            <a href="../settings/settings.html" class="admin-nav-link flex items-center px-4 py-3 rounded-lg mb-2 text-gray-200 hover:bg-blue-700">
+                <i class="fas fa-cog mr-3"></i>
+                Settings
+            </a>
+        </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <div class="admin-content">
+        <!-- Top Bar -->
+        <header class="bg-white shadow-sm border-b border-gray-200">
+            <div class="flex items-center justify-between px-6 py-4">
+                <div class="flex items-center">
+                    <button id="mobile-menu-btn" class="md:hidden mr-4 text-gray-600">
+                        <i class="fas fa-bars text-xl"></i>
+                    </button>
+                    <h2 class="text-2xl font-semibold text-gray-800">Dashboard</h2>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <div class="text-right hidden md:block">
+                        <p class="text-sm font-semibold text-gray-800" id="admin-user-name">Admin</p>
+                        <p class="text-xs text-gray-500" id="admin-user-email">admin@foodiehub.com</p>
+                    </div>
+                    <button id="admin-logout" class="btn btn-danger btn-sm">
+                        <i class="fas fa-sign-out-alt mr-2"></i>Logout
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Dashboard Content -->
+        <main class="p-6">
+            <!-- Stats Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                <div class="stat-card blue">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-blue-100 text-sm font-medium">Total Restaurants</p>
+                            <p class="text-3xl font-bold mt-2" id="stat-restaurants">0</p>
+                        </div>
+                        <div class="text-4xl opacity-50">
+                            <i class="fas fa-store"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="stat-card green">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-green-100 text-sm font-medium">Total Users</p>
+                            <p class="text-3xl font-bold mt-2" id="stat-users">0</p>
+                        </div>
+                        <div class="text-4xl opacity-50">
+                            <i class="fas fa-users"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="stat-card orange">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-orange-100 text-sm font-medium">Total Reviews</p>
+                            <p class="text-3xl font-bold mt-2" id="stat-reviews">0</p>
+                        </div>
+                        <div class="text-4xl opacity-50">
+                            <i class="fas fa-star"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="stat-card purple">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-purple-100 text-sm font-medium">Pending Reviews</p>
+                            <p class="text-3xl font-bold mt-2" id="stat-pending">0</p>
+                        </div>
+                        <div class="text-4xl opacity-50">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Monthly Stats -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                <div class="admin-card p-6">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-4">This Month</h3>
+                    <div class="space-y-4">
+                        <div class="flex items-center justify-between">
+                            <span class="text-gray-600">New Users</span>
+                            <span class="text-xl font-bold text-blue-600" id="month-users">0</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-gray-600">New Restaurants</span>
+                            <span class="text-xl font-bold text-green-600" id="month-restaurants">0</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-gray-600">New Reviews</span>
+                            <span class="text-xl font-bold text-orange-600" id="month-reviews">0</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="admin-card p-6">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-4">Quick Actions</h3>
+                    <div class="space-y-2">
+                        <a href="../reviews/reviews.html?status=pending" class="block w-full btn btn-primary text-center">
+                            <i class="fas fa-check-circle mr-2"></i>Review Pending Reviews
+                        </a>
+                        <a href="../users/users.html" class="block w-full btn btn-success text-center">
+                            <i class="fas fa-users mr-2"></i>Manage Users
+                        </a>
+                        <a href="../restaurants/restaurants.html" class="block w-full btn btn-sm text-center bg-gray-100 text-gray-700 hover:bg-gray-200">
+                            <i class="fas fa-store mr-2"></i>Manage Restaurants
+                        </a>
+                    </div>
+                </div>
+
+                <div class="admin-card p-6">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-4">System Status</h3>
+                    <div class="space-y-3">
+                        <div class="flex items-center justify-between">
+                            <span class="text-gray-600">Active Users</span>
+                            <span class="badge badge-success" id="active-users">0</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-gray-600">Total Cities</span>
+                            <span class="text-lg font-semibold text-gray-800" id="stat-cities">0</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Activity -->
+            <div class="admin-card p-6">
+                <div class="flex items-center justify-between mb-6">
+                    <h3 class="text-lg font-semibold text-gray-800">Recent Activity</h3>
+                    <button class="text-sm text-blue-600 hover:text-blue-800">View All</button>
+                </div>
+                <div id="recent-activity" class="space-y-4">
+                    <div class="flex items-center justify-center py-8">
+                        <div class="spinner"></div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Mobile Menu -->
+    <div id="mobile-menu" class="hidden fixed inset-0 z-30 bg-black bg-opacity-50 md:hidden">
+        <div class="admin-sidebar open"></div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="../../assets/js/admin-api.js"></script>
+    <script src="../../assets/js/admin-main.js"></script>
+    <script src="../../assets/js/dashboard.js"></script>
+</body>
+</html>
+
