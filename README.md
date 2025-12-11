@@ -1,6 +1,6 @@
 # 🍽️ FoodieHub - Restaurant Review Platform
 
-A full-featured restaurant review platform built with Laravel 10 backend API and vanilla JavaScript frontend. Users can discover restaurants, write detailed reviews with photos, and manage their profiles. Complete admin panel for managing users, restaurants, reviews, and system settings.
+A full-featured restaurant review platform built with Laravel 10 backend API and vanilla JavaScript frontend. Users can discover restaurants, write detailed reviews with photos, and manage their profiles. Complete admin panel backend ready (frontend in development).
 
 ![Laravel](https://img.shields.io/badge/Laravel-10.x-FF2D20?style=flat-square&logo=laravel)
 ![PHP](https://img.shields.io/badge/PHP-8.1+-777BB4?style=flat-square&logo=php)
@@ -21,13 +21,13 @@ A full-featured restaurant review platform built with Laravel 10 backend API and
 - 📊 **Personal Stats** - View review history and statistics
 - 🗺️ **Location Features** - Location-based search with Google Maps integration
 
-### 🔧 Admin Features
-- 📊 **Dashboard** - Real-time statistics, monthly metrics, and activity feed
-- 👥 **User Management** - View, edit, ban/unban, and delete users with advanced filtering
-- 🏪 **Restaurant Management** - Manage restaurant listings, search, and view details
-- 📝 **Review Moderation** - Approve or reject pending reviews with status filtering
-- ⚙️ **System Settings** - Configure site settings, registration, and review policies
-- 📈 **Activity Monitoring** - Track recent user activity and platform statistics
+### 🔧 Admin Features (Backend Ready)
+- 📊 **Dashboard** - Real-time statistics and analytics
+- 👥 **User Management** - View, edit, ban/unban, and delete users
+- 🏪 **Restaurant Management** - Manage restaurant listings and details
+- 📝 **Review Moderation** - Approve or reject pending reviews
+- ⚙️ **System Settings** - Configure platform settings
+- 📈 **Activity Feed** - Monitor recent user activity and reviews
 
 ### 🛠️ Technical Features
 - 🔒 **Session-based Authentication** - Secure session management
@@ -139,18 +139,10 @@ A full-featured restaurant review platform built with Laravel 10 backend API and
     ```
     Frontend runs on `http://localhost:3000`
 
-11. **Start admin panel**
+11. **Start admin panel** (when available)
     ```bash
     cd admin/public
-    
-    # Using Python (recommended)
     python -m http.server 3001
-    
-    # OR using Node.js
-    npx http-server -p 3001
-    
-    # OR using PHP
-    php -S localhost:3001
     ```
     Admin panel runs on `http://localhost:3001`
 
@@ -164,20 +156,13 @@ start-dev-servers.bat
 This will start:
 - Backend API on `http://127.0.0.1:8000`
 - User Frontend on `http://localhost:3000`
-- Admin Panel on `http://localhost:3001`
+- Admin Panel on `http://localhost:3001` (when created)
 
 ## 🎯 Usage
 
-### Access Points
-
-- **User Frontend**: `http://localhost:3000` - Public user interface
-- **Admin Panel**: `http://localhost:3001` - Admin management interface
-- **Backend API**: `http://127.0.0.1:8000` - Laravel API endpoints
-
 ### Default Admin Credentials
 
-After running the seeder, you can log in to the admin panel with:
-- **URL**: `http://localhost:3001`
+After running the seeder, you can log in with:
 - **Email**: `admin@foodiehub.com`
 - **Password**: `admin123`
 
@@ -191,24 +176,12 @@ After running the seeder, you can log in to the admin panel with:
 
 ### Admin Flow
 
-1. **Login** - Access admin panel at `http://localhost:3001` with admin credentials
-2. **Dashboard** - View real-time platform statistics, monthly metrics, and activity feed
-3. **Manage Users** - Search, filter, view details, edit, ban/unban, or delete users
-4. **Moderate Reviews** - Filter by status, approve or reject pending reviews
-5. **Manage Restaurants** - Browse, search, view details, and manage restaurant listings
-6. **Settings** - Configure site name, description, registration, and review policies
-
-### Admin Panel Features
-
-The admin panel provides a comprehensive management interface:
-
-- **Real-time Dashboard** - Live statistics with animated counters, monthly metrics, and recent activity feed
-- **Advanced User Management** - Search by name/email/location, filter by status, pagination, detailed user profiles with review history
-- **Restaurant Management** - Browse all restaurants, search functionality, view detailed information
-- **Review Moderation** - Filter reviews by status (pending/approved/rejected), approve/reject with reasons, view full review details
-- **System Configuration** - Manage site settings, registration policies, review length limits
-- **Responsive Design** - Fully responsive interface that works on desktop, tablet, and mobile devices
-- **Session-based Security** - Secure admin authentication with automatic session management
+1. **Login** - Access admin panel with admin credentials
+2. **Dashboard** - View platform statistics and recent activity
+3. **Manage Users** - View, edit, ban/unban, or delete users
+4. **Moderate Reviews** - Approve or reject pending reviews
+5. **Manage Restaurants** - Update restaurant information and status
+6. **Settings** - Configure system-wide settings
 
 ## 📁 Project Structure
 
@@ -243,16 +216,8 @@ foodiehub/
 │           ├── css/                # Stylesheets
 │           ├── js/                 # JavaScript modules
 │           └── images/             # Images and icons
-├── admin/                         # Admin Panel Frontend
+├── admin/                         # Admin Panel (in development)
 │   └── public/                    # Admin frontend files
-│       ├── index.html             # Admin login page
-│       ├── pages/                 # Admin pages
-│       │   ├── dashboard/        # Dashboard & analytics
-│       │   ├── users/             # User management
-│       │   ├── restaurants/       # Restaurant management
-│       │   ├── reviews/           # Review moderation
-│       │   └── settings/          # System settings
-│       └── assets/               # Admin assets (CSS, JS)
 ├── start-dev-servers.bat          # Windows dev script
 ├── start-dev-servers.sh            # Linux/Mac dev script
 └── README.md                      # This file
@@ -346,16 +311,15 @@ ALLOWED_IMAGE_TYPES=jpg,jpeg,png,gif,webp
 ```
 
 ### API Base URL
-Edit `frontend/public/assets/js/api.js` or `admin/public/assets/js/admin-api.js`:
+Edit `frontend/public/assets/js/api.js`:
 ```javascript
 this.baseURL = 'http://127.0.0.1:8000/api';
 ```
 
 ### Styling
-- **Frontend**: `frontend/public/assets/css/style.css`
-- **Admin Panel**: `admin/public/assets/css/admin.css` and `components.css`
+- Main styles: `frontend/public/assets/css/style.css`
 - Uses Tailwind CSS via CDN
-- Custom animations and components in respective CSS files
+- Custom animations and components in style.css
 
 ## 🧪 Testing
 
@@ -368,26 +332,24 @@ php artisan test
 ## 📝 Development Status
 
 ### ✅ Completed
-- ✅ Backend API (100%)
-- ✅ User Frontend (100%)
-- ✅ Admin Panel Frontend (100%)
-- ✅ Authentication System (User & Admin)
-- ✅ Restaurant Management (Frontend & Backend)
-- ✅ Review System with Moderation
-- ✅ Image Upload System
-- ✅ User Management (Admin)
-- ✅ Dashboard & Analytics
-- ✅ System Settings
+- Backend API (100%)
+- User Frontend (100%)
+- Authentication System
+- Restaurant Management
+- Review System
+- Image Upload System
+- Admin Backend API
 
-### 🔮 Planned Features
+### 🚧 In Development
+- Admin Panel Frontend (0%)
+
+### 🔮 Planned
 - Unit and Integration Tests
-- Image Optimization & Lazy Loading
-- SEO Improvements (Meta tags, structured data)
-- Progressive Web App (PWA) Support
+- Image Optimization
+- SEO Improvements
+- Progressive Web App (PWA)
 - Real-time Notifications
-- Advanced Analytics & Reporting
-- Email Notifications
-- Social Media Integration
+- Advanced Analytics
 
 ## 🤝 Contributing
 

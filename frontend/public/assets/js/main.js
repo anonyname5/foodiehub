@@ -836,6 +836,7 @@ async function handleLogin(event) {
     const formData = new FormData(event.target);
     const email = formData.get('email');
     const password = formData.get('password');
+    const adminLogin = formData.get('admin_login') === 'on';
     
     try {
         showLoading('Logging in...');
@@ -848,6 +849,20 @@ async function handleLogin(event) {
             updateAuthUI();
             showNotification('Login successful!', 'success');
             hideLoginModal();
+
+            const isAdminUser = userIsAdmin(currentUser);
+            
+            // If user selected admin login but is not admin, show error
+            if (adminLogin && !isAdminUser) {
+                showNotification('You do not have admin access.', 'error');
+                return;
+            }
+
+            // Redirect admins to admin panel
+            if (isAdminUser) {
+                window.location.href = '/admin/index.html';
+                return;
+            }
         } else {
             showNotification(response.message || 'Login failed', 'error');
         }
@@ -1018,6 +1033,15 @@ function updateAuthUI() {
         authButtons.forEach(button => button.classList.remove('hidden'));
         userMenu.forEach(menu => menu.classList.add('hidden'));
     }
+}
+
+/**
+ * Check if user has admin role
+ */
+function userIsAdmin(user) {
+    if (!user) return false;
+    const role = (user.role || '').toLowerCase();
+    return user.is_admin === true || role === 'admin' || role === 'super_admin';
 }
 
 /**
