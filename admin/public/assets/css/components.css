@@ -1,0 +1,283 @@
+/**
+ * Admin Component Styles
+ * Reusable component styles
+ */
+
+/* Search Bar */
+.search-bar {
+    position: relative;
+}
+
+.search-bar input {
+    padding-left: 2.5rem;
+}
+
+.search-bar-icon {
+    position: absolute;
+    left: 0.75rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #9ca3af;
+}
+
+/* Filter Dropdown */
+.filter-dropdown {
+    position: relative;
+}
+
+.filter-dropdown-menu {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    margin-top: 0.5rem;
+    background: white;
+    border-radius: 0.5rem;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    min-width: 200px;
+    z-index: 50;
+    display: none;
+}
+
+.filter-dropdown.open .filter-dropdown-menu {
+    display: block;
+}
+
+/* Pagination */
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 2rem;
+}
+
+.pagination-btn {
+    padding: 0.5rem 1rem;
+    border: 1px solid #d1d5db;
+    background: white;
+    border-radius: 0.375rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.pagination-btn:hover:not(:disabled) {
+    background-color: #f3f4f6;
+    border-color: #9ca3af;
+}
+
+.pagination-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.pagination-btn.active {
+    background-color: var(--admin-primary);
+    color: white;
+    border-color: var(--admin-primary);
+}
+
+/* Status Indicator */
+.status-indicator {
+    display: inline-block;
+    width: 0.5rem;
+    height: 0.5rem;
+    border-radius: 50%;
+    margin-right: 0.5rem;
+}
+
+.status-indicator.active {
+    background-color: var(--admin-success);
+}
+
+.status-indicator.inactive {
+    background-color: var(--admin-danger);
+}
+
+.status-indicator.pending {
+    background-color: var(--admin-warning);
+}
+
+/* Avatar */
+.avatar {
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #e5e7eb;
+}
+
+.avatar-sm {
+    width: 2rem;
+    height: 2rem;
+}
+
+.avatar-lg {
+    width: 4rem;
+    height: 4rem;
+}
+
+/* Empty State */
+.empty-state {
+    text-align: center;
+    padding: 3rem 1rem;
+    color: #6b7280;
+}
+
+.empty-state-icon {
+    font-size: 4rem;
+    color: #d1d5db;
+    margin-bottom: 1rem;
+}
+
+/* Action Buttons */
+.action-buttons {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.action-btn {
+    padding: 0.375rem 0.75rem;
+    border-radius: 0.375rem;
+    font-size: 0.875rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: none;
+}
+
+.action-btn-view {
+    background-color: #dbeafe;
+    color: #1e40af;
+}
+
+.action-btn-view:hover {
+    background-color: #bfdbfe;
+}
+
+.action-btn-edit {
+    background-color: #fef3c7;
+    color: #92400e;
+}
+
+.action-btn-edit:hover {
+    background-color: #fde68a;
+}
+
+.action-btn-delete {
+    background-color: #fee2e2;
+    color: #991b1b;
+}
+
+.action-btn-delete:hover {
+    background-color: #fecaca;
+}
+
+/* Chart Container */
+.chart-container {
+    position: relative;
+    height: 300px;
+    width: 100%;
+}
+
+/* Tabs */
+.tabs {
+    display: flex;
+    border-bottom: 2px solid #e5e7eb;
+    margin-bottom: 1.5rem;
+}
+
+.tab {
+    padding: 0.75rem 1.5rem;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -2px;
+    transition: all 0.2s ease;
+    color: #6b7280;
+}
+
+.tab:hover {
+    color: var(--admin-primary);
+}
+
+.tab.active {
+    color: var(--admin-primary);
+    border-bottom-color: var(--admin-primary);
+}
+
+/* Tooltip */
+.tooltip {
+    position: relative;
+}
+
+.tooltip-text {
+    visibility: hidden;
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #1f2937;
+    color: white;
+    padding: 0.5rem 0.75rem;
+    border-radius: 0.375rem;
+    font-size: 0.875rem;
+    white-space: nowrap;
+    z-index: 100;
+    margin-bottom: 0.5rem;
+}
+
+.tooltip:hover .tooltip-text {
+    visibility: visible;
+}
+
+/* Progress Bar */
+.progress-bar {
+    width: 100%;
+    height: 0.5rem;
+    background-color: #e5e7eb;
+    border-radius: 9999px;
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    background-color: var(--admin-primary);
+    transition: width 0.3s ease;
+}
+
+/* Toast Notifications */
+.toast {
+    position: fixed;
+    top: 1rem;
+    right: 1rem;
+    padding: 1rem 1.5rem;
+    border-radius: 0.5rem;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+    animation: slideIn 0.3s ease;
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+.toast-success {
+    background-color: var(--admin-success);
+    color: white;
+}
+
+.toast-error {
+    background-color: var(--admin-danger);
+    color: white;
+}
+
+.toast-info {
+    background-color: var(--admin-primary);
+    color: white;
+}
+
