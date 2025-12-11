@@ -41,6 +41,7 @@ Route::prefix('restaurants')->group(function () {
 });
 
 // Dashboard statistics route
+// Public statistics for general dashboard
 Route::get('statistics', [RestaurantController::class, 'statistics']);
 
 // Public review routes
@@ -133,4 +134,5 @@ Route::middleware(['api-session', 'admin'])->group(function () {
 });
 
 // Redirect dashboard statistics to admin endpoint
-Route::middleware(['api-session', 'admin'])->get('statistics', [AdminController::class, 'getDashboardStats']);
+// Admin-only statistics (separate path to avoid shadowing the public route)
+Route::middleware(['api-session', 'admin'])->get('admin/statistics', [AdminController::class, 'getDashboardStats']);
