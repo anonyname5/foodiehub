@@ -41,9 +41,18 @@ class ReviewController extends Controller
             'recommend' => 'nullable|boolean',
         ]);
 
+        // Calculate overall rating as average of all ratings
+        $overallRating = (
+            $validated['food_rating'] + 
+            $validated['service_rating'] + 
+            $validated['ambiance_rating'] + 
+            $validated['value_rating']
+        ) / 4;
+
         $review = Review::create([
             'user_id' => Auth::id(),
             'restaurant_id' => $validated['restaurant_id'],
+            'overall_rating' => round($overallRating, 2),
             'food_rating' => $validated['food_rating'],
             'service_rating' => $validated['service_rating'],
             'ambiance_rating' => $validated['ambiance_rating'],
@@ -91,6 +100,15 @@ class ReviewController extends Controller
             'recommend' => 'nullable|boolean',
         ]);
 
+        // Calculate overall rating
+        $overallRating = (
+            $validated['food_rating'] + 
+            $validated['service_rating'] + 
+            $validated['ambiance_rating'] + 
+            $validated['value_rating']
+        ) / 4;
+        
+        $validated['overall_rating'] = round($overallRating, 2);
         $review->update($validated);
         $review->update(['status' => 'pending']); // Re-submit for approval
 
