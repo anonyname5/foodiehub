@@ -53,6 +53,11 @@
                             <i class="fas fa-address-card text-orange-500 mr-2"></i>{{ $restaurant->address }}
                         </p>
                         @endif
+                        @if($restaurant->phone)
+                        <p class="text-gray-600">
+                            <i class="fas fa-phone text-orange-500 mr-2"></i><a href="tel:{{ $restaurant->phone }}" class="hover:text-orange-600">{{ $restaurant->phone }}</a>
+                        </p>
+                        @endif
                     </div>
                     @auth
                     <div class="flex gap-4">
@@ -112,6 +117,98 @@
         </div>
     </div>
     @endif
+
+    <!-- Restaurant Details Section -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
+            <!-- Main Content -->
+            <div class="lg:col-span-2 space-y-6">
+                <!-- Hours -->
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <div class="flex items-center mb-4">
+                        <i class="fas fa-clock text-orange-500 mr-3 text-xl"></i>
+                        <h2 class="text-2xl font-bold text-gray-800">Working Hours</h2>
+                    </div>
+                    <div class="space-y-2">
+                        @if($restaurant->hours)
+                            @php
+                                $hours = is_string($restaurant->hours) ? json_decode($restaurant->hours, true) : $restaurant->hours;
+                            @endphp
+                            @if(is_array($hours) && count($hours) > 0)
+                                @foreach($hours as $day => $time)
+                                <div class="flex justify-between items-center py-2 border-b border-gray-100 last:border-0">
+                                    <span class="font-semibold text-gray-800 capitalize">{{ $day }}</span>
+                                    <span class="text-gray-600 font-mono text-sm bg-gray-100 px-3 py-1 rounded-md">{{ $time }}</span>
+                                </div>
+                                @endforeach
+                            @elseif(is_string($restaurant->hours))
+                                <p class="text-gray-600">{{ $restaurant->hours }}</p>
+                            @else
+                                <p class="text-gray-500 italic">Hours not specified</p>
+                            @endif
+                        @else
+                            <p class="text-gray-500 italic">Hours not specified</p>
+                        @endif
+                    </div>
+                </div>
+
+                <!-- Features -->
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-4">Features</h2>
+                    <div class="flex flex-wrap gap-2">
+                        @if($restaurant->features)
+                            @php
+                                $features = is_string($restaurant->features) ? json_decode($restaurant->features, true) : $restaurant->features;
+                            @endphp
+                            @if(is_array($features) && count($features) > 0)
+                                @foreach($features as $feature)
+                                <span class="bg-orange-100 text-orange-800 px-3 py-1 rounded-full text-sm font-medium">
+                                    <i class="fas fa-check-circle mr-1"></i>{{ $feature }}
+                                </span>
+                                @endforeach
+                            @elseif(is_string($restaurant->features))
+                                <span class="bg-orange-100 text-orange-800 px-3 py-1 rounded-full text-sm font-medium">
+                                    {{ $restaurant->features }}
+                                </span>
+                            @else
+                                <p class="text-gray-500 italic">No features listed</p>
+                            @endif
+                        @else
+                            <p class="text-gray-500 italic">No features listed</p>
+                        @endif
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sidebar -->
+            <div class="lg:col-span-1">
+                <!-- Contact Info Card -->
+                <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-4">Contact Information</h3>
+                    <div class="space-y-3">
+                        @if($restaurant->address)
+                        <div class="flex items-start">
+                            <i class="fas fa-map-marker-alt text-orange-500 mr-3 mt-1"></i>
+                            <span class="text-gray-700">{{ $restaurant->address }}</span>
+                        </div>
+                        @endif
+                        @if($restaurant->phone)
+                        <div class="flex items-center">
+                            <i class="fas fa-phone text-orange-500 mr-3"></i>
+                            <a href="tel:{{ $restaurant->phone }}" class="text-gray-700 hover:text-orange-500">{{ $restaurant->phone }}</a>
+                        </div>
+                        @endif
+                        @if($restaurant->location)
+                        <div class="flex items-center">
+                            <i class="fas fa-city text-orange-500 mr-3"></i>
+                            <span class="text-gray-700">{{ $restaurant->location }}</span>
+                        </div>
+                        @endif
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- Reviews Section -->
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
