@@ -1,6 +1,6 @@
 # 🍽️ FoodieHub - Restaurant Review Platform
 
-A full-featured restaurant review platform built with Laravel 10 backend API and vanilla JavaScript frontend. Users can discover restaurants, write detailed reviews with photos, and manage their profiles. Complete admin panel backend ready (frontend in development).
+A full-featured restaurant review platform built as a Laravel monolith. Users can discover restaurants, write detailed reviews with photos, and manage their profiles. Complete admin panel integrated with the main application.
 
 ![Laravel](https://img.shields.io/badge/Laravel-10.x-FF2D20?style=flat-square&logo=laravel)
 ![PHP](https://img.shields.io/badge/PHP-8.1+-777BB4?style=flat-square&logo=php)
@@ -32,7 +32,7 @@ A full-featured restaurant review platform built with Laravel 10 backend API and
 ### 🛠️ Technical Features
 - 🔒 **Session-based Authentication** - Secure session management
 - 🖼️ **Polymorphic Images** - Support for images on restaurants and reviews
-- 📦 **RESTful API** - Clean, well-documented API endpoints
+- 🏗️ **Laravel Monolith** - Traditional Laravel application with Blade templates
 - 📱 **Responsive Design** - Mobile-first approach with Tailwind CSS
 - 🎨 **Modern UI** - Clean, professional interface with smooth animations
 - 🔍 **Advanced Search** - Search by name, cuisine, location, and description
@@ -40,13 +40,14 @@ A full-featured restaurant review platform built with Laravel 10 backend API and
 
 ## 🚀 Technology Stack
 
-- **Backend**: 
+- **Backend & Frontend** (Laravel Monolith): 
   - Laravel 10.x
   - PHP 8.1+
   - MySQL
+  - Blade Templates (server-side rendering)
   - Intervention Image (image processing)
-  - Laravel Sanctum (session-based auth)
-- **Frontend**: 
+  - Session-based authentication
+- **Frontend Assets**: 
   - Vanilla JavaScript (ES6+)
   - Tailwind CSS 3.x
   - Font Awesome 6
@@ -118,45 +119,26 @@ A full-featured restaurant review platform built with Laravel 10 backend API and
    php artisan storage:link
    ```
 
-9. **Start the backend server**
+9. **Start the Laravel server**
    ```bash
    php artisan serve
    ```
-   Backend API runs on `http://127.0.0.1:8000`
+   Application runs on `http://127.0.0.1:8000`
 
-10. **Start the frontend server** (in a new terminal)
-    ```bash
-    cd frontend/public
-    
-    # Using Python (recommended)
-    python -m http.server 3000
-    
-    # OR using Node.js
-    npx http-server -p 3000
-    
-    # OR using PHP
-    php -S localhost:3000
-    ```
-    Frontend runs on `http://localhost:3000`
-
-11. **Start admin panel** (when available)
-    ```bash
-    cd admin/public
-    python -m http.server 3001
-    ```
-    Admin panel runs on `http://localhost:3001`
+   - **Main Site**: `http://127.0.0.1:8000`
+   - **Admin Panel**: `http://127.0.0.1:8000/admin` (admin users only)
 
 ### 🚀 Quick Start (Windows)
 
-Use the automated script:
+Simply start the Laravel server:
 ```bash
-start-dev-servers.bat
+cd backend
+php artisan serve
 ```
 
 This will start:
-- Backend API on `http://127.0.0.1:8000`
-- User Frontend on `http://localhost:3000`
-- Admin Panel on `http://localhost:3001` (when created)
+- **Main Application** on `http://127.0.0.1:8000`
+- **Admin Panel** on `http://127.0.0.1:8000/admin` (admin users only)
 
 ## 🎯 Usage
 
@@ -186,97 +168,83 @@ After running the seeder, you can log in with:
 ## 📁 Project Structure
 
 ```
-foodiehub/
-├── backend/                    # Laravel API Backend
+Restaurant Review/
+├── backend/                    # Laravel Monolith Application
 │   ├── app/
 │   │   ├── Http/
-│   │   │   ├── Controllers/Api/    # API Controllers
-│   │   │   │   ├── AdminController.php
-│   │   │   │   ├── AuthController.php
+│   │   │   ├── Controllers/
+│   │   │   │   ├── Admin/            # Admin panel controllers
+│   │   │   │   │   └── AdminController.php
+│   │   │   │   ├── AuthController.php    # Web authentication
+│   │   │   │   ├── HomeController.php    # Homepage
+│   │   │   │   ├── ProfileController.php # User profile
 │   │   │   │   ├── RestaurantController.php
 │   │   │   │   ├── ReviewController.php
-│   │   │   │   ├── UserController.php
-│   │   │   │   └── ImageController.php
+│   │   │   │   └── Api/            # Legacy API controllers (not used)
+│   │   │   │       ├── AdminController.php
+│   │   │   │       ├── AuthController.php
+│   │   │   │       ├── RestaurantController.php
+│   │   │   │       ├── ReviewController.php
+│   │   │   │       ├── UserController.php
+│   │   │   │       └── ImageController.php
 │   │   │   └── Middleware/         # Auth & Admin middleware
 │   │   └── Models/                 # Eloquent models
 │   ├── database/
 │   │   ├── migrations/            # Database migrations
 │   │   └── seeders/               # Database seeders
+│   ├── resources/
+│   │   └── views/                 # Blade templates
+│   │       ├── layouts/           # Layout templates
+│   │       ├── admin/             # Admin panel views
+│   │       ├── restaurants/       # Restaurant views
+│   │       ├── reviews/           # Review views
+│   │       └── profile/           # Profile views
 │   ├── routes/
-│   │   └── api.php                # API routes
+│   │   ├── web.php                # All web routes
+│   │   └── api.php                # Legacy (cleaned/empty)
+│   ├── public/
+│   │   ├── assets/                # Frontend assets
+│   │   ├── admin-assets/          # Admin panel assets
+│   │   └── index.php              # Laravel entry point
 │   └── storage/                   # File storage
-├── frontend/                      # User-facing Frontend
-│   └── public/
-│       ├── index.html             # Homepage
-│       ├── pages/                 # Application pages
-│       │   ├── restaurants/       # Restaurant pages
-│       │   ├── profile/            # User profile
-│       │   └── reviews/            # Review management
-│       └── assets/
-│           ├── css/                # Stylesheets
-│           ├── js/                 # JavaScript modules
-│           └── images/             # Images and icons
-├── admin/                         # Admin Panel (in development)
-│   └── public/                    # Admin frontend files
-├── start-dev-servers.bat          # Windows dev script
-├── start-dev-servers.sh            # Linux/Mac dev script
+├── frontend/                      # Legacy frontend (can be deleted)
 └── README.md                      # This file
 ```
 
-## 🔐 API Routes
+## 🔐 Web Routes
 
-### Authentication Routes
-- `POST /api/auth/register` - User registration
-- `POST /api/auth/login` - User login
-- `GET /api/auth/check` - Check authentication status
-- `POST /api/auth/logout` - User logout
-- `GET /api/auth/profile` - Get user profile
-- `PUT /api/auth/profile` - Update user profile
+### Public Routes
+- `GET /` - Homepage
+- `GET /restaurants` - Restaurant listing
+- `GET /restaurants/{id}` - Restaurant detail
+- `POST /login` - User login
+- `POST /register` - User registration
 
-### Restaurant Routes
-- `GET /api/restaurants` - List restaurants (with filtering)
-- `GET /api/restaurants/{id}` - Get restaurant details
-- `GET /api/restaurants/filter-options` - Get filter options
-- `GET /api/restaurants/{id}/reviews` - Get restaurant reviews
-- `GET /api/restaurants/{id}/rating-breakdown` - Get rating breakdown
-- `GET /api/restaurants/{id}/related` - Get related restaurants
-- `GET /api/statistics` - Get platform statistics
+### Authenticated Routes
+- `GET /profile` - User profile
+- `PUT /profile` - Update profile
+- `GET /reviews/create` - Create review form
+- `POST /reviews` - Submit review
+- `GET /reviews/{id}/edit` - Edit review form
+- `PUT /reviews/{id}` - Update review
+- `DELETE /reviews/{id}` - Delete review
+- `POST /logout` - Logout
 
-### Review Routes
-- `GET /api/reviews` - List reviews
-- `POST /api/reviews` - Create review (authenticated)
-- `GET /api/reviews/{id}` - Get review details
-- `PUT /api/reviews/{id}` - Update review (authenticated)
-- `DELETE /api/reviews/{id}` - Delete review (authenticated)
-- `GET /api/reviews/my/reviews` - Get user's reviews (authenticated)
+### Admin Routes (Admin Only)
+- `GET /admin` - Admin dashboard
+- `GET /admin/users` - User management
+- `GET /admin/users/{id}` - User details
+- `PUT /admin/users/{id}` - Update user
+- `POST /admin/users/{id}/ban` - Ban user
+- `POST /admin/users/{id}/unban` - Unban user
+- `DELETE /admin/users/{id}` - Delete user
+- `GET /admin/restaurants` - Restaurant management
+- `GET /admin/reviews` - Review moderation
+- `POST /admin/reviews/{id}/approve` - Approve review
+- `POST /admin/reviews/{id}/reject` - Reject review
+- `GET /admin/settings` - System settings
+- `PUT /admin/settings` - Update settings
 
-### User Routes
-- `GET /api/users/{id}` - Get user profile
-- `PUT /api/users/{id}` - Update user (authenticated)
-- `GET /api/users/{id}/reviews` - Get user's reviews
-- `GET /api/users/{id}/favorites` - Get user's favorites
-- `POST /api/users/{id}/favorites` - Add favorite (authenticated)
-- `DELETE /api/users/{id}/favorites/{restaurant_id}` - Remove favorite (authenticated)
-
-### Image Routes
-- `POST /api/images/upload` - Upload image (authenticated)
-- `DELETE /api/images/{id}` - Delete image (authenticated)
-- `PUT /api/images/{id}/primary` - Set primary image (authenticated)
-- `PUT /api/images/reorder` - Reorder images (authenticated)
-
-### Admin Routes (Requires Admin Authentication)
-- `GET /api/admin/dashboard/stats` - Dashboard statistics
-- `GET /api/admin/dashboard/activity` - Recent activity
-- `GET /api/admin/users` - List users with filtering
-- `GET /api/admin/users/{id}` - Get user details
-- `PUT /api/admin/users/{id}` - Update user
-- `POST /api/admin/users/{id}/ban` - Ban user
-- `POST /api/admin/users/{id}/unban` - Unban user
-- `DELETE /api/admin/users/{id}` - Delete user
-- `POST /api/admin/reviews/{id}/approve` - Approve review
-- `POST /api/admin/reviews/{id}/reject` - Reject review
-- `GET /api/admin/settings` - Get system settings
-- `PUT /api/admin/settings` - Update system settings
 
 ## 🗄️ Database Schema
 
@@ -310,14 +278,9 @@ MAX_FILE_SIZE=10240  # Max file size in KB
 ALLOWED_IMAGE_TYPES=jpg,jpeg,png,gif,webp
 ```
 
-### API Base URL
-Edit `frontend/public/assets/js/api.js`:
-```javascript
-this.baseURL = 'http://127.0.0.1:8000/api';
-```
-
 ### Styling
-- Main styles: `frontend/public/assets/css/style.css`
+- Main styles: `backend/public/assets/css/style.css`
+- Admin styles: `backend/public/admin-assets/assets/css/admin.css`
 - Uses Tailwind CSS via CDN
 - Custom animations and components in style.css
 
@@ -332,16 +295,14 @@ php artisan test
 ## 📝 Development Status
 
 ### ✅ Completed
-- Backend API (100%)
-- User Frontend (100%)
-- Authentication System
+- Laravel Monolith Application (100%)
+- All User-Facing Pages (Blade Templates)
+- Admin Panel (Blade Templates)
+- Authentication System (Session-based)
 - Restaurant Management
 - Review System
 - Image Upload System
-- Admin Backend API
-
-### 🚧 In Development
-- Admin Panel Frontend (0%)
+- Admin Panel Integration
 
 ### 🔮 Planned
 - Unit and Integration Tests
