@@ -108,7 +108,9 @@
                                     <i class="fas fa-check"></i> Approve
                                 </button>
                             </form>
-                            <form action="{{ route('admin.reviews.reject', $review->id) }}" method="POST" class="inline">
+                            <form action="{{ route('admin.reviews.reject', $review->id) }}" method="POST" class="inline"
+                                  data-confirm-title="Reject Review" 
+                                  data-confirm-message="Are you sure you want to reject this review? The review will be hidden from the restaurant page.">
                                 @csrf
                                 <button type="submit" class="text-red-600 hover:text-red-700 text-xs">
                                     <i class="fas fa-times"></i> Reject

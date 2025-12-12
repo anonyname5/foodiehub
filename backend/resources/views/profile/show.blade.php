@@ -110,10 +110,12 @@
                             <p class="text-gray-600 text-sm">{{ Str::limit($review->content, 150) }}</p>
                             <div class="mt-2 flex gap-2">
                                 <a href="{{ route('reviews.edit', $review->id) }}" class="text-orange-500 hover:text-orange-600 text-sm">Edit</a>
-                                <form action="{{ route('reviews.destroy', $review->id) }}" method="POST" class="inline">
+                                <form action="{{ route('reviews.destroy', $review->id) }}" method="POST" class="inline"
+                                      data-confirm-title="Delete Review" 
+                                      data-confirm-message="Are you sure you want to delete this review? This action cannot be undone.">
                                     @csrf
                                     @method('DELETE')
-                                    <button type="submit" class="text-red-500 hover:text-red-600 text-sm" onclick="return confirm('Are you sure you want to delete this review?')">Delete</button>
+                                    <button type="submit" class="text-red-500 hover:text-red-600 text-sm">Delete</button>
                                 </form>
                             </div>
                         </div>

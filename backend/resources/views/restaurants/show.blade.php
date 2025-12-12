@@ -370,7 +370,9 @@
                                 @if($restaurant->owner_id == Auth::id())
                                 <div class="mt-3 flex gap-2">
                                     <button onclick="editResponse({{ $review->id }})" class="text-sm text-orange-600 hover:text-orange-800">Edit</button>
-                                    <form method="POST" action="{{ route('reviews.response.destroy', $review->id) }}" class="inline" onsubmit="return confirm('Are you sure you want to delete this response?')">
+                                    <form method="POST" action="{{ route('reviews.response.destroy', $review->id) }}" class="inline"
+                                          data-confirm-title="Delete Response" 
+                                          data-confirm-message="Are you sure you want to delete this response? This action cannot be undone.">
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit" class="text-sm text-red-600 hover:text-red-800">Delete</button>

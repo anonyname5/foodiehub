@@ -86,7 +86,9 @@
                                 <i class="fas fa-{{ $restaurant->is_active ? 'pause' : 'play' }}"></i>
                             </button>
                         </form>
-                        <form action="{{ route('admin.restaurants.delete', $restaurant->id) }}" method="POST" class="inline" onsubmit="return confirm('Are you sure you want to delete this restaurant? This action cannot be undone.');">
+                        <form action="{{ route('admin.restaurants.delete', $restaurant->id) }}" method="POST" class="inline" 
+                              data-confirm-title="Delete Restaurant" 
+                              data-confirm-message="Are you sure you want to delete '{{ $restaurant->name }}'? This action cannot be undone and will also delete all associated reviews.">
                             @csrf
                             @method('DELETE')
                             <button type="submit" class="text-red-500 hover:text-red-600" title="Delete">
