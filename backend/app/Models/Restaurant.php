@@ -34,6 +34,7 @@ class Restaurant extends Model
         'average_rating',
         'review_count',
         'is_active',
+        'owner_id',
     ];
 
     /**
@@ -82,6 +83,14 @@ class Restaurant extends Model
     public function primaryImage(): MorphMany
     {
         return $this->morphMany(Image::class, 'imageable')->primary();
+    }
+
+    /**
+     * Get the owner of the restaurant.
+     */
+    public function owner()
+    {
+        return $this->belongsTo(User::class, 'owner_id');
     }
 
     /**
