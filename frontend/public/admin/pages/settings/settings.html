@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin | Settings</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="../../assets/css/admin.css">
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <div class="admin-layout">
+        <aside class="admin-sidebar">
+            <div class="admin-brand">
+                <i class="fas fa-shield-alt text-orange-500 text-2xl"></i>
+                <div>
+                    <div class="text-lg font-bold text-gray-800">FoodieHub</div>
+                    <div class="text-xs text-gray-500">Admin Panel</div>
+                </div>
+            </div>
+            <nav class="admin-nav">
+                <a href="/admin/index.html" class="nav-link"><i class="fas fa-chart-line"></i> Dashboard</a>
+                <a href="/admin/pages/users/users.html" class="nav-link"><i class="fas fa-users"></i> Users</a>
+                <a href="/admin/pages/restaurants/restaurants.html" class="nav-link"><i class="fas fa-store"></i> Restaurants</a>
+                <a href="/admin/pages/reviews/reviews.html" class="nav-link"><i class="fas fa-star-half-alt"></i> Reviews</a>
+                <a href="/admin/pages/settings/settings.html" class="nav-link active"><i class="fas fa-cog"></i> Settings</a>
+            </nav>
+            <div class="admin-sidebar-footer">
+                <div id="admin-name" class="text-sm font-semibold text-gray-800"></div>
+                <button id="admin-logout" class="logout-btn">Logout</button>
+            </div>
+        </aside>
+
+        <main class="admin-main">
+            <header class="admin-header">
+                <div>
+                    <h1 class="text-2xl font-bold text-gray-900">Settings</h1>
+                    <p class="text-sm text-gray-500">Configure system settings</p>
+                </div>
+                <div class="admin-header-actions">
+                    <span id="api-status" class="badge badge-neutral">Checking API...</span>
+                    <span id="session-status" class="badge badge-neutral">Verifying session...</span>
+                </div>
+            </header>
+
+            <section class="panel">
+                <div class="panel-header">
+                    <h2 class="panel-title"><i class="fas fa-cog text-orange-500"></i> Site Settings</h2>
+                </div>
+                <div class="panel-body space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Site Name</label>
+                        <input id="setting-site-name" type="text" class="w-full px-3 py-2 border rounded-lg" placeholder="FoodieHub">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Site Description</label>
+                        <textarea id="setting-site-description" class="w-full px-3 py-2 border rounded-lg" rows="3" placeholder="Discover & review restaurants"></textarea>
+                    </div>
+                    <div class="flex items-center space-x-3">
+                        <input id="setting-registration" type="checkbox" class="h-4 w-4 text-orange-500 border-gray-300 rounded">
+                        <label for="setting-registration" class="text-sm text-gray-700">Enable user registration</label>
+                    </div>
+                    <div class="flex items-center space-x-3">
+                        <input id="setting-review-approval" type="checkbox" class="h-4 w-4 text-orange-500 border-gray-300 rounded">
+                        <label for="setting-review-approval" class="text-sm text-gray-700">Require review approval</label>
+                    </div>
+                    <button id="save-settings" class="bg-orange-500 text-white px-4 py-2 rounded-lg hover:bg-orange-600">Save Settings</button>
+                    <p id="settings-status" class="text-sm text-gray-500"></p>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="../../assets/js/admin-api.js"></script>
+    <script src="../../assets/js/admin-main.js"></script>
+    <script src="../../assets/js/settings.js"></script>
+</body>
+</html>
+

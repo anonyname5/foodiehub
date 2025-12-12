@@ -6,114 +6,90 @@
     <title>FoodieHub Admin</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="./assets/css/admin.css">
 </head>
 <body class="bg-gray-50 min-h-screen">
-    <header class="bg-white shadow-sm">
-        <div class="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
-            <div class="flex items-center space-x-2">
+    <div class="admin-layout">
+        <aside class="admin-sidebar">
+            <div class="admin-brand">
                 <i class="fas fa-shield-alt text-orange-500 text-2xl"></i>
                 <div>
-                    <div class="text-lg font-bold text-gray-800">FoodieHub Admin</div>
-                    <div class="text-xs text-gray-500">Admin Panel (preview)</div>
+                    <div class="text-lg font-bold text-gray-800">FoodieHub</div>
+                    <div class="text-xs text-gray-500">Admin Panel</div>
                 </div>
             </div>
-            <div class="flex items-center space-x-3">
-                <span id="admin-name" class="text-sm text-gray-700"></span>
-                <button id="admin-logout" class="text-sm bg-orange-500 text-white px-3 py-1 rounded hover:bg-orange-600">
-                    Logout
-                </button>
+            <nav class="admin-nav">
+                <a href="/admin/index.html" class="nav-link active"><i class="fas fa-chart-line"></i> Dashboard</a>
+                <a href="/admin/pages/users/users.html" class="nav-link"><i class="fas fa-users"></i> Users</a>
+                <a href="/admin/pages/restaurants/restaurants.html" class="nav-link"><i class="fas fa-store"></i> Restaurants</a>
+                <a href="/admin/pages/reviews/reviews.html" class="nav-link"><i class="fas fa-star-half-alt"></i> Reviews</a>
+                <a href="/admin/pages/settings/settings.html" class="nav-link"><i class="fas fa-cog"></i> Settings</a>
+            </nav>
+            <div class="admin-sidebar-footer">
+                <div id="admin-name" class="text-sm font-semibold text-gray-800"></div>
+                <button id="admin-logout" class="logout-btn">Logout</button>
             </div>
-        </div>
-    </header>
+        </aside>
 
-    <main class="max-w-6xl mx-auto px-4 py-10">
-        <section class="bg-white rounded-lg shadow p-6">
-            <div class="flex items-center space-x-3">
-                <div class="h-12 w-12 bg-orange-100 text-orange-600 flex items-center justify-center rounded-full">
-                    <i class="fas fa-tools text-xl"></i>
-                </div>
+        <main class="admin-main">
+            <header class="admin-header">
                 <div>
-                    <h1 class="text-2xl font-bold text-gray-900">Admin Dashboard (Coming Soon)</h1>
-                    <p class="text-gray-600">You are logged in with admin privileges. Full admin UI will be added next.</p>
+                    <h1 class="text-2xl font-bold text-gray-900">Dashboard</h1>
+                    <p class="text-sm text-gray-500">Platform overview and recent activity</p>
                 </div>
-            </div>
-
-            <div class="mt-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                <div class="p-4 border rounded-lg bg-gray-50">
-                    <div class="text-sm font-semibold text-gray-700 mb-1">Next up</div>
-                    <ul class="text-sm text-gray-600 list-disc list-inside space-y-1">
-                        <li>Dashboard stats & recent activity</li>
-                        <li>User management</li>
-                        <li>Review moderation</li>
-                    </ul>
+                <div class="admin-header-actions">
+                    <span id="api-status" class="badge badge-neutral">Checking API...</span>
+                    <span id="session-status" class="badge badge-neutral">Verifying session...</span>
                 </div>
-                <div class="p-4 border rounded-lg bg-gray-50">
-                    <div class="text-sm font-semibold text-gray-700 mb-1">API status</div>
-                    <p id="api-status" class="text-sm text-gray-600">Checking...</p>
+            </header>
+
+            <section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6" id="stats-cards">
+                <div class="stat-card">
+                    <div class="stat-label">Restaurants</div>
+                    <div class="stat-value" id="stat-restaurants">-</div>
+                    <div class="stat-subtext" id="stat-restaurants-sub">Total restaurants</div>
                 </div>
-                <div class="p-4 border rounded-lg bg-gray-50">
-                    <div class="text-sm font-semibold text-gray-700 mb-1">Session</div>
-                    <p id="session-status" class="text-sm text-gray-600">Verifying...</p>
+                <div class="stat-card">
+                    <div class="stat-label">Users</div>
+                    <div class="stat-value" id="stat-users">-</div>
+                    <div class="stat-subtext" id="stat-users-sub">Active users</div>
                 </div>
-            </div>
-        </section>
-    </main>
+                <div class="stat-card">
+                    <div class="stat-label">Reviews</div>
+                    <div class="stat-value" id="stat-reviews">-</div>
+                    <div class="stat-subtext" id="stat-reviews-sub">Total reviews</div>
+                </div>
+                    <div class="stat-card">
+                    <div class="stat-label">Pending</div>
+                    <div class="stat-value" id="stat-pending">-</div>
+                    <div class="stat-subtext" id="stat-pending-sub">Pending reviews</div>
+                </div>
+            </section>
 
-    <script>
-        const API_BASE = 'http://127.0.0.1:8000/api';
+            <section class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                <div class="panel">
+                    <div class="panel-header">
+                        <h2 class="panel-title"><i class="fas fa-bolt text-orange-500"></i> Recent Activity</h2>
+                    </div>
+                    <div id="recent-activity" class="panel-body space-y-3 text-sm text-gray-700">
+                        <p class="text-gray-500">Loading activity...</p>
+                    </div>
+                </div>
+                <div class="panel">
+                    <div class="panel-header">
+                        <h2 class="panel-title"><i class="fas fa-clipboard-check text-orange-500"></i> Pending Reviews</h2>
+                    </div>
+                    <div id="pending-reviews" class="panel-body space-y-3 text-sm text-gray-700">
+                        <p class="text-gray-500">Loading pending reviews...</p>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
 
-        function isAdminUser(user) {
-            if (!user) return false;
-            const role = (user.role || '').toLowerCase();
-            return user.is_admin === true || role === 'admin' || role === 'super_admin';
-        }
-
-        async function checkAuth() {
-            const statusEl = document.getElementById('session-status');
-            try {
-                const res = await fetch(\`\${API_BASE}/auth/check\`, { credentials: 'include' });
-                const data = await res.json();
-
-                if (!data.success || !data.authenticated || !isAdminUser(data.user)) {
-                    statusEl.textContent = 'Not authorized. Redirecting...';
-                    window.location.href = '/';
-                    return;
-                }
-
-                document.getElementById('admin-name').textContent = data.user.name || 'Admin';
-                statusEl.textContent = 'Authenticated as admin';
-            } catch (e) {
-                statusEl.textContent = 'Session check failed. Redirecting...';
-                window.location.href = '/';
-            }
-        }
-
-        async function checkApi() {
-            const apiEl = document.getElementById('api-status');
-            try {
-                const res = await fetch(\`\${API_BASE}/health\`);
-                const data = await res.json();
-                apiEl.textContent = data.success ? 'API reachable' : 'API check failed';
-            } catch (e) {
-                apiEl.textContent = 'API not reachable';
-            }
-        }
-
-        async function logout() {
-            try {
-                await fetch(\`\${API_BASE}/auth/logout\`, { method: 'POST', credentials: 'include' });
-            } finally {
-                window.location.href = '/';
-            }
-        }
-
-        document.getElementById('admin-logout')?.addEventListener('click', logout);
-
-        (async () => {
-            await checkAuth();
-            await checkApi();
-        })();
-    </script>
+    <script src="./assets/js/admin-api.js"></script>
+    <script src="./assets/js/admin-main.js"></script>
+    <script src="./assets/js/dashboard.js"></script>
 </body>
 </html>
 
