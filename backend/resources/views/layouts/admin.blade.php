@@ -147,16 +147,52 @@
             }
         });
 
-        // Handle delete forms
+        // Handle delete forms and other destructive actions
         document.addEventListener('submit', function(e) {
             const form = e.target;
-            if (form.method === 'POST' && form.querySelector('input[name="_method"][value="DELETE"]')) {
+            
+            // Check if it's a DELETE method
+            const methodInput = form.querySelector('input[name="_method"]');
+            const isDelete = methodInput && methodInput.value === 'DELETE';
+            
+            // Check if form has confirmation data attributes
+            const hasConfirmData = form.hasAttribute('data-confirm-title') || form.hasAttribute('data-confirm-message');
+            
+            if (isDelete || hasConfirmData) {
                 e.preventDefault();
+                e.stopPropagation();
+                e.stopImmediatePropagation();
+                
                 const title = form.dataset.confirmTitle || 'Confirm Delete';
                 const message = form.dataset.confirmMessage || 'Are you sure you want to delete this item? This action cannot be undone.';
                 
                 showConfirmModal(title, message, function() {
-                    form.submit();
+                    // Create a temporary form to submit
+                    const tempForm = document.createElement('form');
+                    tempForm.method = 'POST';
+                    tempForm.action = form.action;
+                    
+                    // Copy CSRF token
+                    const csrfInput = form.querySelector('input[name="_token"]');
+                    if (csrfInput) {
+                        const csrf = document.createElement('input');
+                        csrf.type = 'hidden';
+                        csrf.name = '_token';
+                        csrf.value = csrfInput.value;
+                        tempForm.appendChild(csrf);
+                    }
+                    
+                    // Copy method override
+                    if (methodInput) {
+                        const method = document.createElement('input');
+                        method.type = 'hidden';
+                        method.name = '_method';
+                        method.value = methodInput.value;
+                        tempForm.appendChild(method);
+                    }
+                    
+                    document.body.appendChild(tempForm);
+                    tempForm.submit();
                 });
             }
         });
