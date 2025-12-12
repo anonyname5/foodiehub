@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Review;
 use App\Models\ReviewResponse;
+use App\Notifications\ReviewResponseNotification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -35,11 +36,17 @@ class ReviewResponseController extends Controller
             'response' => 'required|string|max:2000',
         ]);
 
-        ReviewResponse::create([
+        $response = ReviewResponse::create([
             'review_id' => $reviewId,
             'user_id' => Auth::id(),
             'response' => $validated['response'],
         ]);
+
+        // Send notification to review author
+        $reviewAuthor = $review->user;
+        if ($reviewAuthor) {
+            $reviewAuthor->notify(new ReviewResponseNotification($review, $response));
+        }
 
         return redirect()->back()->with('success', 'Response posted successfully!');
     }

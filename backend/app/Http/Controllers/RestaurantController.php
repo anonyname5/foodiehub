@@ -108,7 +108,7 @@ class RestaurantController extends Controller
     /**
      * Display the specified restaurant
      */
-    public function show($id)
+    public function show(Request $request, $id)
     {
         $restaurant = Restaurant::with('images')
                                 ->withCount('reviews')

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Review;
 use App\Models\Restaurant;
+use App\Notifications\NewReviewNotification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -66,6 +67,14 @@ class ReviewController extends Controller
         // Handle image uploads if any
         if ($request->hasFile('images')) {
             // Image upload logic here
+        }
+
+        // Send notification to restaurant owner when review is approved
+        // Note: We'll send it after approval, but for now we can send it immediately
+        // In production, you might want to send it only after admin approval
+        $restaurant = Restaurant::find($validated['restaurant_id']);
+        if ($restaurant && $restaurant->owner) {
+            $restaurant->owner->notify(new NewReviewNotification($review));
         }
 
         return redirect()->route('restaurants.show', $validated['restaurant_id'])

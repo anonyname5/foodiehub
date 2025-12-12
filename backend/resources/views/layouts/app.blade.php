@@ -39,6 +39,15 @@
                         <button id="register-btn" class="bg-orange-500 text-white px-4 py-2 rounded-lg hover:bg-orange-600 transition">Register</button>
                     </div>
                     @else
+                    <!-- Notifications Bell -->
+                    <div class="notifications-menu relative">
+                        <a href="{{ route('notifications.index') }}" class="relative p-2 text-gray-600 hover:text-orange-500 transition">
+                            <i class="fas fa-bell text-xl"></i>
+                            <span id="notification-badge" class="absolute top-0 right-0 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center hidden">
+                                <span id="notification-count">0</span>
+                            </span>
+                        </a>
+                    </div>
                     <!-- User Menu -->
                     <div class="user-menu relative">
                         <button id="user-menu-toggle" class="flex items-center space-x-3 hover:bg-gray-50 rounded-lg px-3 py-2 transition">
