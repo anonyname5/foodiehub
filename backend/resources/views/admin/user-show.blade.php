@@ -50,34 +50,37 @@
                             <button type="submit" class="bg-orange-500 text-white px-4 py-2 rounded-lg hover:bg-orange-600">
                                 <i class="fas fa-save mr-2"></i>Update User
                             </button>
-                            @if($user->is_active)
-                                <form action="{{ route('admin.users.ban', $user->id) }}" method="POST" class="inline"
-                                      data-confirm-title="Ban User" 
-                                      data-confirm-message="Are you sure you want to ban user '{{ $user->name }}'? They will not be able to access their account.">
-                                    @csrf
-                                    <button type="submit" class="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600">
-                                        <i class="fas fa-ban mr-2"></i>Ban User
-                                    </button>
-                                </form>
-                            @else
-                                <form action="{{ route('admin.users.unban', $user->id) }}" method="POST" class="inline">
-                                    @csrf
-                                    <button type="submit" class="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600">
-                                        <i class="fas fa-check mr-2"></i>Unban User
-                                    </button>
-                                </form>
-                            @endif
-                            <form action="{{ route('admin.users.delete', $user->id) }}" method="POST" class="inline"
-                                  data-confirm-title="Delete User" 
-                                  data-confirm-message="Are you sure you want to delete user '{{ $user->name }}'? This action cannot be undone and will also delete all their reviews and data.">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" class="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700">
-                                    <i class="fas fa-trash mr-2"></i>Delete User
-                                </button>
-                            </form>
                         </div>
                     </form>
+                    
+                    <div class="flex gap-2 mt-3 pt-3 border-t border-gray-200">
+                        @if($user->is_active)
+                            <form action="{{ route('admin.users.ban', $user->id) }}" method="POST" class="inline"
+                                  data-confirm-title="Ban User" 
+                                  data-confirm-message="Are you sure you want to ban user '{{ $user->name }}'? They will not be able to access their account.">
+                                @csrf
+                                <button type="submit" class="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600">
+                                    <i class="fas fa-ban mr-2"></i>Ban User
+                                </button>
+                            </form>
+                        @else
+                            <form action="{{ route('admin.users.unban', $user->id) }}" method="POST" class="inline">
+                                @csrf
+                                <button type="submit" class="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600">
+                                    <i class="fas fa-check mr-2"></i>Unban User
+                                </button>
+                            </form>
+                        @endif
+                        <form action="{{ route('admin.users.delete', $user->id) }}" method="POST" class="inline"
+                              data-confirm-title="Delete User" 
+                              data-confirm-message="Are you sure you want to delete user '{{ $user->name }}'? This action cannot be undone and will also delete all their reviews and data.">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" class="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700">
+                                <i class="fas fa-trash mr-2"></i>Delete User
+                            </button>
+                        </form>
+                    </div>
                 </div>
             </section>
 

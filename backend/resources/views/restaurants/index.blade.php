@@ -38,71 +38,103 @@
             </form>
 
             <!-- Filters -->
-            <form action="{{ route('restaurants.index') }}" method="GET" id="filter-form" class="flex flex-wrap gap-4 items-center">
-                @if(request('search'))
-                    <input type="hidden" name="search" value="{{ request('search') }}">
-                @endif
-                
-                <div class="flex items-center space-x-2">
-                    <label class="text-sm font-medium text-gray-700">Cuisine:</label>
-                    <select name="cuisine" id="cuisine-filter" class="form-input py-2 px-3 text-sm">
-                        <option value="">All Cuisines</option>
-                        @foreach($cuisines as $cuisine)
-                            <option value="{{ $cuisine }}" {{ request('cuisine') == $cuisine ? 'selected' : '' }}>{{ $cuisine }}</option>
-                        @endforeach
-                    </select>
-                </div>
-                
-                <div class="flex items-center space-x-2">
-                    <label class="text-sm font-medium text-gray-700">Price:</label>
-                    <select name="price_range" id="price-filter" class="form-input py-2 px-3 text-sm">
-                        <option value="">All Prices</option>
-                        @foreach($priceRanges as $price)
-                            <option value="{{ $price }}" {{ request('price_range') == $price ? 'selected' : '' }}>{{ $price }}</option>
-                        @endforeach
-                    </select>
-                </div>
-                
-                <div class="flex items-center space-x-2">
-                    <label class="text-sm font-medium text-gray-700">Rating:</label>
-                    <select name="min_rating" id="rating-filter" class="form-input py-2 px-3 text-sm">
-                        <option value="">All Ratings</option>
-                        <option value="4.5" {{ request('min_rating') == '4.5' ? 'selected' : '' }}>4.5+ Stars</option>
-                        <option value="4.0" {{ request('min_rating') == '4.0' ? 'selected' : '' }}>4.0+ Stars</option>
-                        <option value="3.5" {{ request('min_rating') == '3.5' ? 'selected' : '' }}>3.5+ Stars</option>
-                    </select>
-                </div>
-                
-                @if(isset($allFeatures) && $allFeatures->count() > 0)
-                <div class="flex items-center space-x-2">
-                    <label class="text-sm font-medium text-gray-700">Features:</label>
-                    <select name="features[]" id="features-filter" multiple class="form-input py-2 px-3 text-sm" style="min-width: 150px;">
-                        @foreach($allFeatures as $feature)
-                            <option value="{{ $feature }}" {{ in_array($feature, request('features', [])) ? 'selected' : '' }}>{{ $feature }}</option>
-                        @endforeach
-                    </select>
-                </div>
-                @endif
-                
-                <div class="flex items-center space-x-2">
-                    <label class="text-sm font-medium text-gray-700">Sort By:</label>
-                    <select name="sort_by" id="sort-filter" class="form-input py-2 px-3 text-sm" onchange="this.form.submit()">
-                        <option value="rating" {{ request('sort_by') == 'rating' || !request('sort_by') ? 'selected' : '' }}>Highest Rated</option>
-                        <option value="reviews" {{ request('sort_by') == 'reviews' ? 'selected' : '' }}>Most Reviews</option>
-                        <option value="newest" {{ request('sort_by') == 'newest' ? 'selected' : '' }}>Newest</option>
-                    </select>
-                </div>
-                
-                <button type="submit" class="text-orange-500 hover:text-orange-600 text-sm font-medium">
-                    Apply Filters
-                </button>
-                
-                @if(request()->hasAny(['cuisine', 'price_range', 'min_rating', 'location', 'features', 'sort_by']))
-                    <a href="{{ route('restaurants.index') }}" class="text-gray-500 hover:text-gray-600 text-sm font-medium">
-                        Clear Filters
-                    </a>
-                @endif
-            </form>
+            <div class="bg-gradient-to-r from-gray-50 to-orange-50 rounded-2xl p-6 shadow-md border border-gray-200">
+                <form action="{{ route('restaurants.index') }}" method="GET" id="filter-form">
+                    @if(request('search'))
+                        <input type="hidden" name="search" value="{{ request('search') }}">
+                    @endif
+                    
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-lg font-semibold text-gray-800 flex items-center">
+                            <i class="fas fa-filter text-orange-500 mr-2"></i>
+                            Filters
+                        </h3>
+                        <div class="flex items-center gap-3">
+                            @if(request()->hasAny(['cuisine', 'price_range', 'min_rating', 'location', 'features', 'sort_by']))
+                                <a href="{{ route('restaurants.index') }}" class="text-sm text-gray-600 hover:text-orange-600 font-medium flex items-center">
+                                    <i class="fas fa-times-circle mr-1"></i>Clear All
+                                </a>
+                            @endif
+                            <button type="submit" class="bg-orange-500 text-white px-6 py-2 rounded-lg hover:bg-orange-600 transition font-medium text-sm flex items-center">
+                                <i class="fas fa-check mr-2"></i>Apply
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                        <!-- Cuisine Filter -->
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">
+                                <i class="fas fa-utensils text-orange-500 mr-1"></i>Cuisine
+                            </label>
+                            <select name="cuisine" id="cuisine-filter" class="w-full px-4 py-2.5 border-2 border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 bg-white text-gray-700 transition">
+                                <option value="">All Cuisines</option>
+                                @foreach($cuisines as $cuisine)
+                                    <option value="{{ $cuisine }}" {{ request('cuisine') == $cuisine ? 'selected' : '' }}>{{ $cuisine }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        
+                        <!-- Price Filter -->
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">
+                                <i class="fas fa-dollar-sign text-orange-500 mr-1"></i>Price Range
+                            </label>
+                            <select name="price_range" id="price-filter" class="w-full px-4 py-2.5 border-2 border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 bg-white text-gray-700 transition">
+                                <option value="">All Prices</option>
+                                @foreach($priceRanges as $price)
+                                    <option value="{{ $price }}" {{ request('price_range') == $price ? 'selected' : '' }}>{{ $price }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        
+                        <!-- Rating Filter -->
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">
+                                <i class="fas fa-star text-orange-500 mr-1"></i>Minimum Rating
+                            </label>
+                            <select name="min_rating" id="rating-filter" class="w-full px-4 py-2.5 border-2 border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 bg-white text-gray-700 transition">
+                                <option value="">All Ratings</option>
+                                <option value="4.5" {{ request('min_rating') == '4.5' ? 'selected' : '' }}>4.5+ Stars</option>
+                                <option value="4.0" {{ request('min_rating') == '4.0' ? 'selected' : '' }}>4.0+ Stars</option>
+                                <option value="3.5" {{ request('min_rating') == '3.5' ? 'selected' : '' }}>3.5+ Stars</option>
+                            </select>
+                        </div>
+                        
+                        <!-- Sort Filter -->
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">
+                                <i class="fas fa-sort text-orange-500 mr-1"></i>Sort By
+                            </label>
+                            <select name="sort_by" id="sort-filter" class="w-full px-4 py-2.5 border-2 border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 bg-white text-gray-700 transition" onchange="this.form.submit()">
+                                <option value="rating" {{ request('sort_by') == 'rating' || !request('sort_by') ? 'selected' : '' }}>Highest Rated</option>
+                                <option value="reviews" {{ request('sort_by') == 'reviews' ? 'selected' : '' }}>Most Reviews</option>
+                                <option value="newest" {{ request('sort_by') == 'newest' ? 'selected' : '' }}>Newest</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <!-- Features Filter -->
+                    @if(isset($allFeatures) && $allFeatures->count() > 0)
+                    <div class="mt-6 pt-6 border-t border-gray-200">
+                        <label class="block text-sm font-semibold text-gray-700 mb-3">
+                            <i class="fas fa-check-circle text-orange-500 mr-1"></i>Features
+                        </label>
+                        <div class="flex flex-wrap gap-2">
+                            @foreach($allFeatures as $feature)
+                            <label class="inline-flex items-center px-4 py-2 rounded-full border-2 cursor-pointer transition-all duration-200 {{ in_array($feature, request('features', [])) ? 'bg-orange-500 border-orange-500 text-white shadow-md' : 'bg-white border-gray-300 text-gray-700 hover:border-orange-300 hover:bg-orange-50' }}">
+                                <input type="checkbox" name="features[]" value="{{ $feature }}" {{ in_array($feature, request('features', [])) ? 'checked' : '' }} class="sr-only">
+                                <span class="text-sm font-medium">{{ $feature }}</span>
+                                @if(in_array($feature, request('features', [])))
+                                    <i class="fas fa-check ml-2 text-xs"></i>
+                                @endif
+                            </label>
+                            @endforeach
+                        </div>
+                    </div>
+                    @endif
+                </form>
+            </div>
         </div>
     </div>
 
@@ -167,4 +199,22 @@
         </div>
     </div>
 @endsection
+
+@push('scripts')
+<script>
+    // Feature checkbox styling
+    document.querySelectorAll('input[name="features[]"]').forEach(function(checkbox) {
+        checkbox.addEventListener('change', function() {
+            const label = this.closest('label');
+            if (this.checked) {
+                label.classList.remove('bg-white', 'border-gray-300', 'text-gray-700', 'hover:border-orange-300', 'hover:bg-orange-50');
+                label.classList.add('bg-orange-500', 'border-orange-500', 'text-white', 'shadow-md');
+            } else {
+                label.classList.remove('bg-orange-500', 'border-orange-500', 'text-white', 'shadow-md');
+                label.classList.add('bg-white', 'border-gray-300', 'text-gray-700', 'hover:border-orange-300', 'hover:bg-orange-50');
+            }
+        });
+    });
+</script>
+@endpush
 
