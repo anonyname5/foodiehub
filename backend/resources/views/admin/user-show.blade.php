@@ -51,10 +51,11 @@
                                 <i class="fas fa-save mr-2"></i>Update User
                             </button>
                             @if($user->is_active)
-                                <form action="{{ route('admin.users.ban', $user->id) }}" method="POST" class="inline">
+                                <form action="{{ route('admin.users.ban', $user->id) }}" method="POST" class="inline"
+                                      data-confirm-title="Ban User" 
+                                      data-confirm-message="Are you sure you want to ban user '{{ $user->name }}'? They will not be able to access their account.">
                                     @csrf
-                                    <button type="submit" class="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600" 
-                                            onclick="return confirm('Are you sure you want to ban this user?')">
+                                    <button type="submit" class="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600">
                                         <i class="fas fa-ban mr-2"></i>Ban User
                                     </button>
                                 </form>
@@ -66,11 +67,12 @@
                                     </button>
                                 </form>
                             @endif
-                            <form action="{{ route('admin.users.delete', $user->id) }}" method="POST" class="inline">
+                            <form action="{{ route('admin.users.delete', $user->id) }}" method="POST" class="inline"
+                                  data-confirm-title="Delete User" 
+                                  data-confirm-message="Are you sure you want to delete user '{{ $user->name }}'? This action cannot be undone and will also delete all their reviews and data.">
                                 @csrf
                                 @method('DELETE')
-                                <button type="submit" class="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700"
-                                        onclick="return confirm('Are you sure you want to delete this user? This action cannot be undone.')">
+                                <button type="submit" class="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700">
                                     <i class="fas fa-trash mr-2"></i>Delete User
                                 </button>
                             </form>

@@ -160,6 +160,80 @@
         </div>
     </div>
     @endif
+
+    <!-- Analytics Section -->
+    <div class="mt-6 grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <!-- Rating Breakdown Chart -->
+        <div class="bg-white rounded-lg shadow">
+            <div class="p-6 border-b border-gray-200">
+                <h2 class="text-xl font-bold text-gray-900">Rating Distribution</h2>
+            </div>
+            <div class="p-6">
+                @foreach([5, 4, 3, 2, 1] as $rating)
+                <div class="mb-3">
+                    <div class="flex items-center justify-between mb-1">
+                        <span class="text-sm font-medium text-gray-700">{{ $rating }} Star{{ $rating > 1 ? 's' : '' }}</span>
+                        <span class="text-sm text-gray-600">{{ $analytics['rating_breakdown'][$rating] ?? 0 }}</span>
+                    </div>
+                    <div class="w-full bg-gray-200 rounded-full h-2">
+                        @php
+                            $total = array_sum($analytics['rating_breakdown']);
+                            $percentage = $total > 0 ? (($analytics['rating_breakdown'][$rating] ?? 0) / $total) * 100 : 0;
+                        @endphp
+                        <div class="bg-orange-500 h-2 rounded-full" style="width: {{ $percentage }}%"></div>
+                    </div>
+                </div>
+                @endforeach
+            </div>
+        </div>
+
+        <!-- Category Ratings -->
+        <div class="bg-white rounded-lg shadow">
+            <div class="p-6 border-b border-gray-200">
+                <h2 class="text-xl font-bold text-gray-900">Category Ratings</h2>
+            </div>
+            <div class="p-6">
+                <div class="space-y-4">
+                    <div>
+                        <div class="flex justify-between mb-1">
+                            <span class="text-sm font-medium text-gray-700">Food</span>
+                            <span class="text-sm font-semibold">{{ number_format($analytics['category_ratings']['food'], 1) }}/5</span>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-2">
+                            <div class="bg-orange-500 h-2 rounded-full" style="width: {{ ($analytics['category_ratings']['food'] / 5) * 100 }}%"></div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="flex justify-between mb-1">
+                            <span class="text-sm font-medium text-gray-700">Service</span>
+                            <span class="text-sm font-semibold">{{ number_format($analytics['category_ratings']['service'], 1) }}/5</span>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-2">
+                            <div class="bg-orange-500 h-2 rounded-full" style="width: {{ ($analytics['category_ratings']['service'] / 5) * 100 }}%"></div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="flex justify-between mb-1">
+                            <span class="text-sm font-medium text-gray-700">Ambiance</span>
+                            <span class="text-sm font-semibold">{{ number_format($analytics['category_ratings']['ambiance'], 1) }}/5</span>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-2">
+                            <div class="bg-orange-500 h-2 rounded-full" style="width: {{ ($analytics['category_ratings']['ambiance'] / 5) * 100 }}%"></div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="flex justify-between mb-1">
+                            <span class="text-sm font-medium text-gray-700">Value</span>
+                            <span class="text-sm font-semibold">{{ number_format($analytics['category_ratings']['value'], 1) }}/5</span>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-2">
+                            <div class="bg-orange-500 h-2 rounded-full" style="width: {{ ($analytics['category_ratings']['value'] / 5) * 100 }}%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 @endsection
 

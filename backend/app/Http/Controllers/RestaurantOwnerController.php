@@ -38,6 +38,34 @@ class RestaurantOwnerController extends Controller
             'total_favorites' => $restaurant->favoritedBy()->count(),
         ];
 
+        // Analytics data
+        $analytics = [
+            // Rating breakdown
+            'rating_breakdown' => [
+                5 => $restaurant->reviews()->where('status', 'approved')->where('overall_rating', 5)->count(),
+                4 => $restaurant->reviews()->where('status', 'approved')->where('overall_rating', 4)->count(),
+                3 => $restaurant->reviews()->where('status', 'approved')->where('overall_rating', 3)->count(),
+                2 => $restaurant->reviews()->where('status', 'approved')->where('overall_rating', 2)->count(),
+                1 => $restaurant->reviews()->where('status', 'approved')->where('overall_rating', 1)->count(),
+            ],
+            // Reviews over time (last 6 months)
+            'reviews_over_time' => $restaurant->reviews()
+                ->where('status', 'approved')
+                ->where('created_at', '>=', now()->subMonths(6))
+                ->selectRaw('DATE_FORMAT(created_at, "%Y-%m") as month, COUNT(*) as count')
+                ->groupBy('month')
+                ->orderBy('month')
+                ->get()
+                ->pluck('count', 'month'),
+            // Average ratings by category
+            'category_ratings' => [
+                'food' => $restaurant->reviews()->where('status', 'approved')->avg('food_rating') ?? 0,
+                'service' => $restaurant->reviews()->where('status', 'approved')->avg('service_rating') ?? 0,
+                'ambiance' => $restaurant->reviews()->where('status', 'approved')->avg('ambiance_rating') ?? 0,
+                'value' => $restaurant->reviews()->where('status', 'approved')->avg('value_rating') ?? 0,
+            ],
+        ];
+
         // Get recent reviews
         $recentReviews = $restaurant->reviews()
             ->with('user')
@@ -46,7 +74,7 @@ class RestaurantOwnerController extends Controller
             ->limit(5)
             ->get();
 
-        return view('restaurant-owner.dashboard', compact('restaurant', 'stats', 'recentReviews'));
+        return view('restaurant-owner.dashboard', compact('restaurant', 'stats', 'recentReviews', 'analytics'));
     }
 
     /**

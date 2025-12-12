@@ -39,6 +39,15 @@
                         <button id="register-btn" class="bg-orange-500 text-white px-4 py-2 rounded-lg hover:bg-orange-600 transition">Register</button>
                     </div>
                     @else
+                    <!-- Notifications Bell -->
+                    <div class="notifications-menu relative">
+                        <a href="{{ route('notifications.index') }}" class="relative p-2 text-gray-600 hover:text-orange-500 transition">
+                            <i class="fas fa-bell text-xl"></i>
+                            <span id="notification-badge" class="absolute top-0 right-0 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center hidden">
+                                <span id="notification-count">0</span>
+                            </span>
+                        </a>
+                    </div>
                     <!-- User Menu -->
                     <div class="user-menu relative">
                         <button id="user-menu-toggle" class="flex items-center space-x-3 hover:bg-gray-50 rounded-lg px-3 py-2 transition">
@@ -305,8 +314,85 @@
     </div>
     @endguest
 
+    {{-- Confirmation Modal --}}
+    <div id="confirm-modal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden items-center justify-center" style="display: none;">
+        <div class="bg-white rounded-lg shadow-xl max-w-md w-full mx-4 transform transition-all">
+            <div class="p-6">
+                <div class="flex items-center mb-4">
+                    <div class="flex-shrink-0 mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100">
+                        <i class="fas fa-exclamation-triangle text-red-600 text-xl"></i>
+                    </div>
+                </div>
+                <h3 class="text-lg font-semibold text-gray-900 mb-2 text-center" id="confirm-title">Confirm Delete</h3>
+                <p class="text-sm text-gray-600 mb-6 text-center" id="confirm-message">Are you sure you want to delete this item? This action cannot be undone.</p>
+                <div class="flex gap-3">
+                    <button type="button" id="confirm-cancel" class="flex-1 bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300 transition font-medium">
+                        Cancel
+                    </button>
+                    <button type="button" id="confirm-ok" class="flex-1 bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition font-medium">
+                        <i class="fas fa-trash mr-2"></i>Delete
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     {{-- API.js removed - using monolith approach, no API calls needed --}}
     <script src="{{ asset('assets/js/main.js') }}"></script>
+    <script>
+        // Confirmation Modal Handler
+        let confirmCallback = null;
+        const confirmModal = document.getElementById('confirm-modal');
+        const confirmTitle = document.getElementById('confirm-title');
+        const confirmMessage = document.getElementById('confirm-message');
+        const confirmOk = document.getElementById('confirm-ok');
+        const confirmCancel = document.getElementById('confirm-cancel');
+
+        function showConfirmModal(title, message, callback) {
+            confirmTitle.textContent = title || 'Confirm Delete';
+            confirmMessage.textContent = message || 'Are you sure you want to delete this item? This action cannot be undone.';
+            confirmCallback = callback;
+            confirmModal.classList.remove('hidden');
+            confirmModal.style.display = 'flex';
+        }
+
+        function hideConfirmModal() {
+            confirmModal.classList.add('hidden');
+            confirmModal.style.display = 'none';
+            confirmCallback = null;
+        }
+
+        confirmOk.addEventListener('click', function() {
+            if (confirmCallback) {
+                confirmCallback();
+            }
+            hideConfirmModal();
+        });
+
+        confirmCancel.addEventListener('click', hideConfirmModal);
+        
+        // Close modal when clicking outside
+        confirmModal.addEventListener('click', function(e) {
+            if (e.target === confirmModal) {
+                hideConfirmModal();
+            }
+        });
+
+        // Handle delete forms
+        document.addEventListener('submit', function(e) {
+            const form = e.target;
+            if (form.method === 'POST' && form.querySelector('input[name="_method"][value="DELETE"]')) {
+                e.preventDefault();
+                const action = form.action;
+                const title = form.dataset.confirmTitle || 'Confirm Delete';
+                const message = form.dataset.confirmMessage || 'Are you sure you want to delete this item? This action cannot be undone.';
+                
+                showConfirmModal(title, message, function() {
+                    form.submit();
+                });
+            }
+        });
+    </script>
     @stack('scripts')
 </body>
 </html>

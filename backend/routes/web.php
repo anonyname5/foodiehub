@@ -26,12 +26,27 @@ Route::middleware('auth')->group(function () {
     Route::get('/reviews/{id}/edit', [ReviewController::class, 'edit'])->name('reviews.edit');
     Route::put('/reviews/{id}', [ReviewController::class, 'update'])->name('reviews.update');
     Route::delete('/reviews/{id}', [ReviewController::class, 'destroy'])->name('reviews.destroy');
+    
+    // Helpful votes
+    Route::post('/reviews/{id}/helpful', [\App\Http\Controllers\HelpfulVoteController::class, 'toggle'])->name('reviews.helpful');
+    
+    // Review responses (restaurant owners)
+    Route::post('/reviews/{id}/response', [\App\Http\Controllers\ReviewResponseController::class, 'store'])->name('reviews.response.store');
+    Route::put('/reviews/{id}/response', [\App\Http\Controllers\ReviewResponseController::class, 'update'])->name('reviews.response.update');
+    Route::delete('/reviews/{id}/response', [\App\Http\Controllers\ReviewResponseController::class, 'destroy'])->name('reviews.response.destroy');
 });
 
 // Profile routes (authenticated)
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'show'])->name('profile.show');
     Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    
+    // Notification routes
+    Route::get('/notifications', [\App\Http\Controllers\NotificationController::class, 'index'])->name('notifications.index');
+    Route::get('/notifications/unread-count', [\App\Http\Controllers\NotificationController::class, 'unreadCount'])->name('notifications.unread-count');
+    Route::get('/notifications/recent', [\App\Http\Controllers\NotificationController::class, 'recent'])->name('notifications.recent');
+    Route::post('/notifications/{id}/read', [\App\Http\Controllers\NotificationController::class, 'markAsRead'])->name('notifications.read');
+    Route::post('/notifications/read-all', [\App\Http\Controllers\NotificationController::class, 'markAllAsRead'])->name('notifications.read-all');
 });
 
 // Restaurant Owner routes (authenticated + restaurant owner)
