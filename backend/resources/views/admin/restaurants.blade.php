@@ -33,6 +33,9 @@
     <section class="panel">
         <div class="panel-header">
             <h2 class="panel-title"><i class="fas fa-store text-orange-500"></i> Restaurants ({{ $restaurants->total() }})</h2>
+            <a href="{{ route('admin.restaurants.create') }}" class="btn btn-primary">
+                <i class="fas fa-plus mr-2"></i>Add New Restaurant
+            </a>
         </div>
         <div class="panel-body divide-y divide-gray-200">
             @forelse($restaurants as $restaurant)
@@ -68,9 +71,28 @@
                         @else
                             <span class="badge badge-danger">Inactive</span>
                         @endif
-                        <a href="{{ route('restaurants.show', $restaurant->id) }}" class="text-orange-500 hover:text-orange-600" target="_blank">
-                            <i class="fas fa-external-link-alt"></i> View
+                        @if($restaurant->owner)
+                            <span class="badge badge-info">Owned by {{ $restaurant->owner->name }}</span>
+                        @endif
+                        <a href="{{ route('restaurants.show', $restaurant->id) }}" class="text-orange-500 hover:text-orange-600" target="_blank" title="View on site">
+                            <i class="fas fa-external-link-alt"></i>
                         </a>
+                        <a href="{{ route('admin.restaurants.edit', $restaurant->id) }}" class="text-blue-500 hover:text-blue-600" title="Edit">
+                            <i class="fas fa-edit"></i>
+                        </a>
+                        <form action="{{ route('admin.restaurants.toggle-status', $restaurant->id) }}" method="POST" class="inline">
+                            @csrf
+                            <button type="submit" class="text-yellow-500 hover:text-yellow-600" title="{{ $restaurant->is_active ? 'Deactivate' : 'Activate' }}">
+                                <i class="fas fa-{{ $restaurant->is_active ? 'pause' : 'play' }}"></i>
+                            </button>
+                        </form>
+                        <form action="{{ route('admin.restaurants.delete', $restaurant->id) }}" method="POST" class="inline" onsubmit="return confirm('Are you sure you want to delete this restaurant? This action cannot be undone.');">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" class="text-red-500 hover:text-red-600" title="Delete">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </form>
                     </div>
                 </div>
             @empty

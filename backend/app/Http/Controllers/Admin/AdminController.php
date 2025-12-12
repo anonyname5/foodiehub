@@ -184,7 +184,7 @@ class AdminController extends Controller
      */
     public function restaurants(Request $request)
     {
-        $query = Restaurant::with(['images', 'primaryImage'])
+        $query = Restaurant::with(['images', 'primaryImage', 'owner'])
             ->withCount('reviews');
 
         // Search
@@ -209,6 +209,142 @@ class AdminController extends Controller
         $restaurants = $query->latest()->paginate(15);
 
         return view('admin.restaurants', compact('restaurants'));
+    }
+
+    /**
+     * Show form to create a new restaurant
+     */
+    public function createRestaurant()
+    {
+        $owners = User::where('is_admin', false)->whereNull('restaurant_id')->get();
+        return view('admin.restaurant-create', compact('owners'));
+    }
+
+    /**
+     * Store a newly created restaurant
+     */
+    public function storeRestaurant(Request $request)
+    {
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'cuisine' => 'required|string|max:255',
+            'description' => 'required|string|max:5000',
+            'address' => 'required|string|max:500',
+            'phone' => 'nullable|string|max:20',
+            'price_range' => 'required|in:$,$$,$$$,$$$$',
+            'location' => 'required|string|max:255',
+            'latitude' => 'nullable|numeric|between:-90,90',
+            'longitude' => 'nullable|numeric|between:-180,180',
+            'hours' => 'nullable|array',
+            'features' => 'nullable|array',
+            'is_active' => 'sometimes|boolean',
+            'owner_id' => 'nullable|exists:users,id',
+        ]);
+
+        $restaurant = Restaurant::create($validated);
+
+        // If owner_id is provided, link the user to the restaurant
+        if ($request->has('owner_id') && $request->owner_id) {
+            $owner = User::findOrFail($request->owner_id);
+            $owner->update(['restaurant_id' => $restaurant->id]);
+            $restaurant->update(['owner_id' => $owner->id]);
+        }
+
+        return redirect()->route('admin.restaurants')
+                        ->with('success', 'Restaurant created successfully!');
+    }
+
+    /**
+     * Show form to edit a restaurant
+     */
+    public function editRestaurant($id)
+    {
+        $restaurant = Restaurant::with('owner')->findOrFail($id);
+        $owners = User::where('is_admin', false)
+                     ->where(function($q) use ($id) {
+                         $q->whereNull('restaurant_id')->orWhere('restaurant_id', $id);
+                     })
+                     ->get();
+        
+        return view('admin.restaurant-edit', compact('restaurant', 'owners'));
+    }
+
+    /**
+     * Update a restaurant
+     */
+    public function updateRestaurant(Request $request, $id)
+    {
+        $restaurant = Restaurant::findOrFail($id);
+
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'cuisine' => 'required|string|max:255',
+            'description' => 'required|string|max:5000',
+            'address' => 'required|string|max:500',
+            'phone' => 'nullable|string|max:20',
+            'price_range' => 'required|in:$,$$,$$$,$$$$',
+            'location' => 'required|string|max:255',
+            'latitude' => 'nullable|numeric|between:-90,90',
+            'longitude' => 'nullable|numeric|between:-180,180',
+            'hours' => 'nullable|array',
+            'features' => 'nullable|array',
+            'is_active' => 'sometimes|boolean',
+            'owner_id' => 'nullable|exists:users,id',
+        ]);
+
+        // Handle owner change
+        if ($request->has('owner_id')) {
+            $oldOwner = $restaurant->owner;
+            
+            // Remove old owner link
+            if ($oldOwner) {
+                $oldOwner->update(['restaurant_id' => null]);
+            }
+
+            // Set new owner
+            if ($request->owner_id) {
+                $newOwner = User::findOrFail($request->owner_id);
+                $newOwner->update(['restaurant_id' => $restaurant->id]);
+                $validated['owner_id'] = $newOwner->id;
+            } else {
+                $validated['owner_id'] = null;
+            }
+        }
+
+        $restaurant->update($validated);
+
+        return redirect()->route('admin.restaurants')
+                        ->with('success', 'Restaurant updated successfully!');
+    }
+
+    /**
+     * Delete a restaurant
+     */
+    public function deleteRestaurant($id)
+    {
+        $restaurant = Restaurant::findOrFail($id);
+        
+        // Remove owner link
+        if ($restaurant->owner) {
+            $restaurant->owner->update(['restaurant_id' => null]);
+        }
+
+        $restaurant->delete();
+
+        return redirect()->route('admin.restaurants')
+                        ->with('success', 'Restaurant deleted successfully!');
+    }
+
+    /**
+     * Toggle restaurant active status
+     */
+    public function toggleRestaurantStatus($id)
+    {
+        $restaurant = Restaurant::findOrFail($id);
+        $restaurant->update(['is_active' => !$restaurant->is_active]);
+
+        $status = $restaurant->is_active ? 'activated' : 'deactivated';
+        return back()->with('success', "Restaurant {$status} successfully!");
     }
 
     /**

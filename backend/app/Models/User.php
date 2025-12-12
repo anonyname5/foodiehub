@@ -31,6 +31,7 @@ class User extends Authenticatable
         'last_login_at',
         'banned_at',
         'location',
+        'restaurant_id',
     ];
 
     /**
@@ -123,6 +124,22 @@ class User extends Authenticatable
     public function isSuperAdmin(): bool
     {
         return $this->role === 'super_admin';
+    }
+
+    /**
+     * Check if user is a restaurant owner
+     */
+    public function isRestaurantOwner(): bool
+    {
+        return $this->restaurant_id !== null || $this->role === 'restaurant_owner';
+    }
+
+    /**
+     * Get the restaurant owned by this user
+     */
+    public function ownedRestaurant()
+    {
+        return $this->belongsTo(Restaurant::class, 'restaurant_id');
     }
 
     /**
