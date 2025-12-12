@@ -391,7 +391,7 @@ This project is open-sourced software licensed under the [MIT license](https://o
 
 ## 📧 Support
 
-For support, email support@foodiehub.com or open an issue in the repository.
+For support, email ahmdsyukri09@gmail.com or open an issue in the repository.
 
 ## 🙏 Acknowledgments
 
