@@ -26,6 +26,14 @@ Route::middleware('auth')->group(function () {
     Route::get('/reviews/{id}/edit', [ReviewController::class, 'edit'])->name('reviews.edit');
     Route::put('/reviews/{id}', [ReviewController::class, 'update'])->name('reviews.update');
     Route::delete('/reviews/{id}', [ReviewController::class, 'destroy'])->name('reviews.destroy');
+    
+    // Helpful votes
+    Route::post('/reviews/{id}/helpful', [\App\Http\Controllers\HelpfulVoteController::class, 'toggle'])->name('reviews.helpful');
+    
+    // Review responses (restaurant owners)
+    Route::post('/reviews/{id}/response', [\App\Http\Controllers\ReviewResponseController::class, 'store'])->name('reviews.response.store');
+    Route::put('/reviews/{id}/response', [\App\Http\Controllers\ReviewResponseController::class, 'update'])->name('reviews.response.update');
+    Route::delete('/reviews/{id}/response', [\App\Http\Controllers\ReviewResponseController::class, 'destroy'])->name('reviews.response.destroy');
 });
 
 // Profile routes (authenticated)

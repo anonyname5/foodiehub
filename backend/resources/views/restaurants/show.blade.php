@@ -212,7 +212,39 @@
 
     <!-- Reviews Section -->
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <h2 class="text-2xl font-bold text-gray-800 mb-6">Reviews</h2>
+        <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-6">
+            <h2 class="text-2xl font-bold text-gray-800 mb-4 md:mb-0">Reviews ({{ $reviews->total() }})</h2>
+            
+            <!-- Review Sorting and Filtering -->
+            <form method="GET" action="{{ route('restaurants.show', $restaurant->id) }}" class="flex flex-wrap gap-3">
+                <!-- Sort -->
+                <select name="sort_reviews" onchange="this.form.submit()" class="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500">
+                    <option value="newest" {{ request('sort_reviews') == 'newest' || !request('sort_reviews') ? 'selected' : '' }}>Newest First</option>
+                    <option value="highest" {{ request('sort_reviews') == 'highest' ? 'selected' : '' }}>Highest Rated</option>
+                    <option value="helpful" {{ request('sort_reviews') == 'helpful' ? 'selected' : '' }}>Most Helpful</option>
+                    <option value="lowest" {{ request('sort_reviews') == 'lowest' ? 'selected' : '' }}>Lowest Rated</option>
+                </select>
+                
+                <!-- Filter by Rating -->
+                <select name="rating_filter" onchange="this.form.submit()" class="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500">
+                    <option value="">All Ratings</option>
+                    @for($i = 5; $i >= 1; $i--)
+                        <option value="{{ $i }}" {{ request('rating_filter') == $i ? 'selected' : '' }}>{{ $i }} Star{{ $i > 1 ? 's' : '' }}</option>
+                    @endfor
+                </select>
+                
+                <!-- Verified Only -->
+                <label class="flex items-center px-3 py-2 border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-50">
+                    <input type="checkbox" name="verified_only" value="1" {{ request('verified_only') ? 'checked' : '' }} onchange="this.form.submit()" class="mr-2">
+                    <span class="text-sm">Verified Only</span>
+                </label>
+                
+                <!-- Clear Filters -->
+                @if(request('sort_reviews') || request('rating_filter') || request('verified_only'))
+                    <a href="{{ route('restaurants.show', $restaurant->id) }}" class="px-3 py-2 text-sm text-gray-600 hover:text-gray-800">Clear</a>
+                @endif
+            </form>
+        </div>
         
         @forelse($reviews as $review)
             <div class="bg-white rounded-lg shadow-md p-6 mb-6">
@@ -222,7 +254,14 @@
                              alt="{{ $review->user->name }}" 
                              class="w-12 h-12 rounded-full mr-4">
                         <div>
-                            <h3 class="font-semibold text-gray-800">{{ $review->user->name }}</h3>
+                            <div class="flex items-center gap-2">
+                                <h3 class="font-semibold text-gray-800">{{ $review->user->name }}</h3>
+                                @if($review->is_verified)
+                                    <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800" title="Verified Review">
+                                        <i class="fas fa-check-circle mr-1"></i>Verified
+                                    </span>
+                                @endif
+                            </div>
                             <p class="text-sm text-gray-500">{{ $review->created_at->diffForHumans() }}</p>
                         </div>
                     </div>
@@ -244,10 +283,77 @@
                 </div>
                 @endif
                 
-                @if($review->recommend)
-                <div class="flex items-center text-green-600">
-                    <i class="fas fa-thumbs-up mr-2"></i>
-                    <span class="text-sm font-medium">Recommended</span>
+                <div class="flex items-center justify-between mt-4 pt-4 border-t border-gray-200">
+                    <div class="flex items-center gap-4">
+                        @if($review->recommend)
+                        <div class="flex items-center text-green-600">
+                            <i class="fas fa-thumbs-up mr-2"></i>
+                            <span class="text-sm font-medium">Recommended</span>
+                        </div>
+                        @endif
+                        
+                        <!-- Helpful Vote Button -->
+                        @auth
+                        <button type="button" 
+                                onclick="toggleHelpful({{ $review->id }})" 
+                                class="flex items-center gap-2 text-sm text-gray-600 hover:text-orange-500 transition {{ in_array($review->id, $userHelpfulVotes ?? []) ? 'text-orange-500' : '' }}"
+                                id="helpful-btn-{{ $review->id }}">
+                            <i class="fas fa-thumbs-up"></i>
+                            <span>Helpful</span>
+                            <span id="helpful-count-{{ $review->id }}">{{ $review->helpful_count }}</span>
+                        </button>
+                        @else
+                        <div class="flex items-center gap-2 text-sm text-gray-400">
+                            <i class="fas fa-thumbs-up"></i>
+                            <span>Helpful</span>
+                            <span>{{ $review->helpful_count }}</span>
+                        </div>
+                        @endauth
+                    </div>
+                </div>
+                
+                <!-- Restaurant Owner Response -->
+                @if($review->response)
+                <div class="mt-4 pt-4 border-t border-gray-200 bg-orange-50 rounded-lg p-4">
+                    <div class="flex items-start">
+                        <div class="flex-shrink-0">
+                            <i class="fas fa-store text-orange-500 text-xl"></i>
+                        </div>
+                        <div class="ml-3 flex-1">
+                            <div class="flex items-center justify-between mb-2">
+                                <h4 class="font-semibold text-gray-800">Restaurant Owner Response</h4>
+                                <span class="text-xs text-gray-500">{{ $review->response->created_at->diffForHumans() }}</span>
+                            </div>
+                            <p class="text-gray-700">{{ $review->response->response }}</p>
+                            @auth
+                                @if($restaurant->owner_id == Auth::id())
+                                <div class="mt-3 flex gap-2">
+                                    <button onclick="editResponse({{ $review->id }})" class="text-sm text-orange-600 hover:text-orange-800">Edit</button>
+                                    <form method="POST" action="{{ route('reviews.response.destroy', $review->id) }}" class="inline" onsubmit="return confirm('Are you sure you want to delete this response?')">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="text-sm text-red-600 hover:text-red-800">Delete</button>
+                                    </form>
+                                </div>
+                                @endif
+                            @endauth
+                        </div>
+                    </div>
+                </div>
+                @elseif(auth()->check() && $restaurant->owner_id == Auth::id())
+                <!-- Response Form (for restaurant owners) -->
+                <div class="mt-4 pt-4 border-t border-gray-200">
+                    <button onclick="showResponseForm({{ $review->id }})" class="text-sm text-orange-600 hover:text-orange-800">
+                        <i class="fas fa-reply mr-1"></i>Respond to this review
+                    </button>
+                    <form id="response-form-{{ $review->id }}" method="POST" action="{{ route('reviews.response.store', $review->id) }}" class="hidden mt-3">
+                        @csrf
+                        <textarea name="response" rows="3" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500" placeholder="Write a response to this review..."></textarea>
+                        <div class="mt-2 flex gap-2">
+                            <button type="submit" class="px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 text-sm">Post Response</button>
+                            <button type="button" onclick="hideResponseForm({{ $review->id }})" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 text-sm">Cancel</button>
+                        </div>
+                    </form>
                 </div>
                 @endif
             </div>
@@ -270,4 +376,57 @@
         </div>
     </div>
 @endsection
+
+@push('scripts')
+<script>
+    function toggleHelpful(reviewId) {
+        fetch(`/reviews/${reviewId}/helpful`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+            },
+            credentials: 'same-origin'
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                const btn = document.getElementById(`helpful-btn-${reviewId}`);
+                const countEl = document.getElementById(`helpful-count-${reviewId}`);
+                
+                countEl.textContent = data.helpful_count;
+                
+                if (data.helpful) {
+                    btn.classList.add('text-orange-500');
+                    btn.classList.remove('text-gray-600');
+                } else {
+                    btn.classList.remove('text-orange-500');
+                    btn.classList.add('text-gray-600');
+                }
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Failed to update helpful vote. Please try again.');
+        });
+    }
+    
+    function showResponseForm(reviewId) {
+        const form = document.getElementById(`response-form-${reviewId}`);
+        form.classList.remove('hidden');
+    }
+    
+    function hideResponseForm(reviewId) {
+        const form = document.getElementById(`response-form-${reviewId}`);
+        form.classList.add('hidden');
+        form.querySelector('textarea').value = '';
+    }
+    
+    function editResponse(reviewId) {
+        // This would need to fetch the current response and populate the form
+        // For now, just show the form
+        showResponseForm(reviewId);
+    }
+</script>
+@endpush
 

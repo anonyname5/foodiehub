@@ -73,11 +73,31 @@
                     </select>
                 </div>
                 
+                @if(isset($allFeatures) && $allFeatures->count() > 0)
+                <div class="flex items-center space-x-2">
+                    <label class="text-sm font-medium text-gray-700">Features:</label>
+                    <select name="features[]" id="features-filter" multiple class="form-input py-2 px-3 text-sm" style="min-width: 150px;">
+                        @foreach($allFeatures as $feature)
+                            <option value="{{ $feature }}" {{ in_array($feature, request('features', [])) ? 'selected' : '' }}>{{ $feature }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                @endif
+                
+                <div class="flex items-center space-x-2">
+                    <label class="text-sm font-medium text-gray-700">Sort By:</label>
+                    <select name="sort_by" id="sort-filter" class="form-input py-2 px-3 text-sm" onchange="this.form.submit()">
+                        <option value="rating" {{ request('sort_by') == 'rating' || !request('sort_by') ? 'selected' : '' }}>Highest Rated</option>
+                        <option value="reviews" {{ request('sort_by') == 'reviews' ? 'selected' : '' }}>Most Reviews</option>
+                        <option value="newest" {{ request('sort_by') == 'newest' ? 'selected' : '' }}>Newest</option>
+                    </select>
+                </div>
+                
                 <button type="submit" class="text-orange-500 hover:text-orange-600 text-sm font-medium">
                     Apply Filters
                 </button>
                 
-                @if(request()->hasAny(['cuisine', 'price_range', 'min_rating', 'location']))
+                @if(request()->hasAny(['cuisine', 'price_range', 'min_rating', 'location', 'features', 'sort_by']))
                     <a href="{{ route('restaurants.index') }}" class="text-gray-500 hover:text-gray-600 text-sm font-medium">
                         Clear Filters
                     </a>
