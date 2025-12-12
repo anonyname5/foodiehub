@@ -5,6 +5,8 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 
 class Review extends Model
@@ -25,7 +27,7 @@ class Review extends Model
         'ambiance_rating',
         'value_rating',
         'title',
-        'comment',
+        'content',
         'visit_date',
         'photos',
         'recommend',
@@ -77,6 +79,30 @@ class Review extends Model
     public function images(): MorphMany
     {
         return $this->morphMany(Image::class, 'imageable')->ordered();
+    }
+
+    /**
+     * Get the helpful votes for the review.
+     */
+    public function helpfulVotes(): HasMany
+    {
+        return $this->hasMany(HelpfulVote::class);
+    }
+
+    /**
+     * Get the response from the restaurant owner.
+     */
+    public function response(): HasOne
+    {
+        return $this->hasOne(ReviewResponse::class);
+    }
+
+    /**
+     * Check if a user has voted helpful for this review.
+     */
+    public function hasUserVotedHelpful($userId): bool
+    {
+        return $this->helpfulVotes()->where('user_id', $userId)->exists();
     }
 
     /**
@@ -146,5 +172,14 @@ class Review extends Model
         static::deleted(function ($review) {
             $review->restaurant->updateRatingStats();
         });
+    }
+    
+    /**
+     * Update helpful count based on votes
+     */
+    public function updateHelpfulCount()
+    {
+        $this->helpful_count = $this->helpfulVotes()->count();
+        $this->saveQuietly();
     }
 }
