@@ -59,13 +59,33 @@
                         </p>
                         @endif
                     </div>
-                    @auth
                     <div class="flex gap-4">
+                        @auth
                         <a href="{{ route('reviews.create', ['restaurant_id' => $restaurant->id]) }}" class="bg-orange-500 text-white px-6 py-2 rounded-lg hover:bg-orange-600 transition">
                             <i class="fas fa-edit mr-2"></i>Write Review
                         </a>
+                        @endauth
+                        <!-- Social Sharing -->
+                        <div class="relative group">
+                            <button onclick="toggleShareMenu()" class="bg-gray-200 text-gray-700 px-6 py-2 rounded-lg hover:bg-gray-300 transition">
+                                <i class="fas fa-share-alt mr-2"></i>Share
+                            </button>
+                            <div id="share-menu" class="absolute top-full left-0 mt-2 bg-white rounded-lg shadow-lg border border-gray-200 p-3 hidden z-10">
+                                <a href="https://www.facebook.com/sharer/sharer.php?u={{ urlencode(route('restaurants.show', $restaurant->id)) }}" target="_blank" class="flex items-center px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded mb-1">
+                                    <i class="fab fa-facebook text-blue-600 mr-2"></i>Facebook
+                                </a>
+                                <a href="https://twitter.com/intent/tweet?url={{ urlencode(route('restaurants.show', $restaurant->id)) }}&text={{ urlencode($restaurant->name) }}" target="_blank" class="flex items-center px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded mb-1">
+                                    <i class="fab fa-twitter text-blue-400 mr-2"></i>Twitter
+                                </a>
+                                <a href="https://wa.me/?text={{ urlencode($restaurant->name . ' - ' . route('restaurants.show', $restaurant->id)) }}" target="_blank" class="flex items-center px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded mb-1">
+                                    <i class="fab fa-whatsapp text-green-600 mr-2"></i>WhatsApp
+                                </a>
+                                <button onclick="copyLink('{{ route('restaurants.show', $restaurant->id) }}')" class="flex items-center w-full px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded">
+                                    <i class="fas fa-link text-gray-600 mr-2"></i>Copy Link
+                                </button>
+                            </div>
+                        </div>
                     </div>
-                    @endauth
                 </div>
             </div>
         </div>
@@ -204,8 +224,29 @@
                             <span class="text-gray-700">{{ $restaurant->location }}</span>
                         </div>
                         @endif
+                        @if($restaurant->latitude && $restaurant->longitude)
+                        <div class="mt-4">
+                            <a href="https://www.google.com/maps?q={{ $restaurant->latitude }},{{ $restaurant->longitude }}" target="_blank" class="inline-flex items-center text-orange-600 hover:text-orange-800">
+                                <i class="fas fa-map-marked-alt mr-2"></i>
+                                <span>View on Google Maps</span>
+                                <i class="fas fa-external-link-alt ml-2 text-xs"></i>
+                            </a>
+                        </div>
+                        @endif
                     </div>
                 </div>
+
+                <!-- Map Card -->
+                @if($restaurant->latitude && $restaurant->longitude)
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-4">Location</h3>
+                    <div id="restaurant-map" class="w-full h-64 rounded-lg overflow-hidden" style="min-height: 256px;"></div>
+                    <p class="text-sm text-gray-600 mt-3 text-center">
+                        <i class="fas fa-map-marker-alt text-orange-500 mr-1"></i>
+                        {{ $restaurant->address ?? $restaurant->location }}
+                    </p>
+                </div>
+                @endif
             </div>
         </div>
     </div>
@@ -377,6 +418,18 @@
     </div>
 @endsection
 
+@push('styles')
+<style>
+    .custom-restaurant-marker {
+        background: transparent;
+        border: none;
+    }
+    #restaurant-map {
+        z-index: 1;
+    }
+</style>
+@endpush
+
 @push('scripts')
 <script>
     function toggleHelpful(reviewId) {
@@ -427,6 +480,126 @@
         // For now, just show the form
         showResponseForm(reviewId);
     }
+    
+    // Image Modal
+    function openImageModal(imageSrc) {
+        const modal = document.createElement('div');
+        modal.className = 'fixed inset-0 bg-black bg-opacity-75 z-50 flex items-center justify-center p-4';
+        modal.innerHTML = `
+            <div class="relative max-w-4xl max-h-full">
+                <img src="${imageSrc}" alt="Restaurant photo" class="max-w-full max-h-[90vh] object-contain rounded-lg">
+                <button onclick="this.closest('.fixed').remove()" class="absolute top-4 right-4 bg-white text-gray-800 rounded-full w-10 h-10 flex items-center justify-center hover:bg-gray-200 transition">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+        `;
+        modal.onclick = function(e) {
+            if (e.target === modal) {
+                modal.remove();
+            }
+        };
+        document.body.appendChild(modal);
+    }
+    
+    // Share Menu
+    function toggleShareMenu() {
+        const menu = document.getElementById('share-menu');
+        menu.classList.toggle('hidden');
+    }
+    
+    // Close share menu when clicking outside
+    document.addEventListener('click', function(event) {
+        const shareMenu = document.getElementById('share-menu');
+        const shareButton = event.target.closest('button[onclick="toggleShareMenu()"]');
+        if (shareMenu && !shareMenu.contains(event.target) && !shareButton) {
+            shareMenu.classList.add('hidden');
+        }
+    });
+    
+    // Copy Link
+    function copyLink(url) {
+        navigator.clipboard.writeText(url).then(function() {
+            alert('Link copied to clipboard!');
+            document.getElementById('share-menu').classList.add('hidden');
+        });
+    }
+    
+    // Initialize OpenStreetMap with Leaflet (Free, no API key required)
+    @if($restaurant->latitude && $restaurant->longitude)
+    function initMap() {
+        // Initialize map centered on restaurant location
+        const map = L.map('restaurant-map').setView([{{ $restaurant->latitude }}, {{ $restaurant->longitude }}], 15);
+        
+        // Add OpenStreetMap tiles
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+            maxZoom: 19,
+        }).addTo(map);
+        
+        // Create custom icon for restaurant marker
+        const restaurantIcon = L.divIcon({
+            className: 'custom-restaurant-marker',
+            html: '<div style="background-color: #f97316; width: 32px; height: 32px; border-radius: 50% 50% 50% 0; transform: rotate(-45deg); border: 3px solid white; box-shadow: 0 2px 6px rgba(0,0,0,0.3); position: relative;"><i class="fas fa-utensils" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(45deg); color: white; font-size: 14px;"></i></div>',
+            iconSize: [32, 32],
+            iconAnchor: [16, 32],
+            popupAnchor: [0, -32]
+        });
+        
+        // Add marker
+        const marker = L.marker([{{ $restaurant->latitude }}, {{ $restaurant->longitude }}], {
+            icon: restaurantIcon
+        }).addTo(map);
+        
+        // Create popup content
+        const popupContent = `
+            <div class="p-2" style="min-width: 200px;">
+                <h3 class="font-bold text-gray-800 mb-1 text-base">{{ addslashes($restaurant->name) }}</h3>
+                <p class="text-sm text-gray-600 mb-2">{{ addslashes($restaurant->address ?? $restaurant->location) }}</p>
+                @if($restaurant->phone)
+                <p class="text-sm text-gray-600 mb-2">
+                    <i class="fas fa-phone mr-1"></i>{{ $restaurant->phone }}
+                </p>
+                @endif
+                <div class="flex gap-2 mt-3">
+                    <a href="https://www.google.com/maps?q={{ $restaurant->latitude }},{{ $restaurant->longitude }}" target="_blank" class="text-orange-600 hover:text-orange-800 text-xs">
+                        <i class="fas fa-external-link-alt mr-1"></i>Google Maps
+                    </a>
+                    <a href="https://www.openstreetmap.org/?mlat={{ $restaurant->latitude }}&mlon={{ $restaurant->longitude }}&zoom=15" target="_blank" class="text-blue-600 hover:text-blue-800 text-xs">
+                        <i class="fas fa-map mr-1"></i>OpenStreetMap
+                    </a>
+                </div>
+            </div>
+        `;
+        
+        // Bind popup to marker and open it
+        marker.bindPopup(popupContent).openPopup();
+    }
+    
+    // Load Leaflet CSS
+    if (!document.querySelector('link[href*="leaflet"]')) {
+        const leafletCSS = document.createElement('link');
+        leafletCSS.rel = 'stylesheet';
+        leafletCSS.href = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css';
+        leafletCSS.integrity = 'sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=';
+        leafletCSS.crossOrigin = '';
+        document.head.appendChild(leafletCSS);
+    }
+    
+    // Load Leaflet JS
+    if (!window.L) {
+        const leafletJS = document.createElement('script');
+        leafletJS.src = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js';
+        leafletJS.integrity = 'sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=';
+        leafletJS.crossOrigin = '';
+        leafletJS.onload = function() {
+            initMap();
+        };
+        document.head.appendChild(leafletJS);
+    } else {
+        // Leaflet already loaded
+        initMap();
+    }
+    @endif
 </script>
 @endpush
 
