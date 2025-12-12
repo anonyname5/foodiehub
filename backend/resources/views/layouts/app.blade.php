@@ -68,6 +68,19 @@
                                     Admin Panel
                                 </a>
                                 @endif
+                                @if(Auth::user()->isRestaurantOwner())
+                                <hr class="my-1">
+                                <a href="{{ route('restaurant-owner.dashboard') }}" class="flex items-center px-4 py-2 text-sm text-blue-600 hover:bg-blue-50 transition">
+                                    <i class="fas fa-store mr-3 text-blue-500"></i>
+                                    My Restaurant
+                                </a>
+                                @elseif(!Auth::user()->isAdmin())
+                                <hr class="my-1">
+                                <a href="{{ route('restaurant-owner.claim') }}" class="flex items-center px-4 py-2 text-sm text-blue-600 hover:bg-blue-50 transition">
+                                    <i class="fas fa-store mr-3 text-blue-500"></i>
+                                    Claim Restaurant
+                                </a>
+                                @endif
                                 <hr class="my-1">
                                 <form action="{{ route('logout') }}" method="POST" class="inline">
                                     @csrf
@@ -122,6 +135,15 @@
                         @if(Auth::user()->isAdmin())
                         <a href="{{ route('admin.dashboard') }}" class="block text-orange-600 hover:text-orange-700 text-sm font-semibold">
                             <i class="fas fa-shield-alt mr-2"></i>Admin Panel
+                        </a>
+                        @endif
+                        @if(Auth::user()->isRestaurantOwner())
+                        <a href="{{ route('restaurant-owner.dashboard') }}" class="block text-blue-600 hover:text-blue-700 text-sm font-semibold">
+                            <i class="fas fa-store mr-2"></i>My Restaurant
+                        </a>
+                        @elseif(!Auth::user()->isAdmin())
+                        <a href="{{ route('restaurant-owner.claim') }}" class="block text-blue-600 hover:text-blue-700 text-sm font-semibold">
+                            <i class="fas fa-store mr-2"></i>Claim Restaurant
                         </a>
                         @endif
                         <form action="{{ route('logout') }}" method="POST" class="inline">

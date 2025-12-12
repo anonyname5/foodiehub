@@ -1,24 +1,31 @@
-@extends('layouts.admin')
+@extends('layouts.app')
 
 @section('title', 'Edit Restaurant - FoodieHub')
-@section('page-title', 'Edit Restaurant')
-@section('page-description', 'Update restaurant information')
 
 @section('content')
-    <section class="panel">
-        <div class="panel-header">
-            <h2 class="panel-title"><i class="fas fa-edit text-orange-500"></i> Edit Restaurant</h2>
-            <div class="flex gap-2">
-                <a href="{{ route('restaurants.show', $restaurant->id) }}" class="btn btn-secondary">
-                    <i class="fas fa-eye mr-2"></i>View on Site
-                </a>
-                <a href="{{ route('admin.restaurants') }}" class="btn btn-secondary">
-                    <i class="fas fa-arrow-left mr-2"></i>Back to List
+<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="mb-6">
+        <h1 class="text-3xl font-bold text-gray-900">Edit Restaurant</h1>
+        <p class="text-gray-600 mt-2">Update your restaurant information</p>
+    </div>
+
+    @if(session('success'))
+        <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
+            {{ session('success') }}
+        </div>
+    @endif
+
+    <div class="bg-white rounded-lg shadow">
+        <div class="p-6 border-b border-gray-200">
+            <div class="flex justify-between items-center">
+                <h2 class="text-xl font-bold text-gray-900">Restaurant Details</h2>
+                <a href="{{ route('restaurant-owner.dashboard') }}" class="text-gray-600 hover:text-gray-900">
+                    <i class="fas fa-arrow-left mr-2"></i>Back to Dashboard
                 </a>
             </div>
         </div>
-        <div class="panel-body">
-            <form action="{{ route('admin.restaurants.update', $restaurant->id) }}" method="POST">
+        <div class="p-6">
+            <form action="{{ route('restaurant-owner.update') }}" method="POST">
                 @csrf
                 @method('PUT')
                 
@@ -93,42 +100,19 @@
                                class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500">
                         @error('longitude')<p class="text-red-500 text-sm mt-1">{{ $message }}</p>@enderror
                     </div>
-
-                    <div>
-                        <label for="owner_id" class="block text-sm font-medium text-gray-700 mb-2">Restaurant Owner</label>
-                        <select id="owner_id" name="owner_id"
-                                class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500">
-                            <option value="">No owner assigned</option>
-                            @foreach($owners as $owner)
-                                <option value="{{ $owner->id }}" {{ old('owner_id', $restaurant->owner_id) == $owner->id ? 'selected' : '' }}>
-                                    {{ $owner->name }} ({{ $owner->email }})
-                                    @if($owner->restaurant_id == $restaurant->id) - Current Owner @endif
-                                </option>
-                            @endforeach
-                        </select>
-                        @error('owner_id')<p class="text-red-500 text-sm mt-1">{{ $message }}</p>@enderror
-                        <p class="text-xs text-gray-500 mt-1">Assign or change the restaurant owner. They will be able to manage this restaurant.</p>
-                    </div>
-
-                    <div>
-                        <label class="flex items-center space-x-2">
-                            <input type="checkbox" name="is_active" value="1" {{ old('is_active', $restaurant->is_active) ? 'checked' : '' }}
-                                   class="h-4 w-4 text-orange-500 focus:ring-orange-500 border-gray-300 rounded">
-                            <span class="text-sm text-gray-700">Active (visible to users)</span>
-                        </label>
-                    </div>
                 </div>
 
                 <div class="mt-6 flex gap-3">
                     <button type="submit" class="bg-orange-500 text-white px-6 py-2 rounded-lg hover:bg-orange-600">
                         <i class="fas fa-save mr-2"></i>Update Restaurant
                     </button>
-                    <a href="{{ route('admin.restaurants') }}" class="bg-gray-200 text-gray-700 px-6 py-2 rounded-lg hover:bg-gray-300">
+                    <a href="{{ route('restaurant-owner.dashboard') }}" class="bg-gray-200 text-gray-700 px-6 py-2 rounded-lg hover:bg-gray-300">
                         Cancel
                     </a>
                 </div>
             </form>
         </div>
-    </section>
+    </div>
+</div>
 @endsection
 

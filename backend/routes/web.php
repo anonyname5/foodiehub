@@ -34,6 +34,20 @@ Route::middleware('auth')->group(function () {
     Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
 });
 
+// Restaurant Owner routes (authenticated + restaurant owner)
+Route::middleware(['auth', 'restaurant_owner'])->prefix('restaurant-owner')->name('restaurant-owner.')->group(function () {
+    Route::get('/dashboard', [\App\Http\Controllers\RestaurantOwnerController::class, 'dashboard'])->name('dashboard');
+    Route::get('/edit', [\App\Http\Controllers\RestaurantOwnerController::class, 'edit'])->name('edit');
+    Route::put('/update', [\App\Http\Controllers\RestaurantOwnerController::class, 'update'])->name('update');
+    Route::get('/reviews', [\App\Http\Controllers\RestaurantOwnerController::class, 'reviews'])->name('reviews');
+});
+
+// Restaurant claiming (authenticated users only, no restaurant owner requirement)
+Route::middleware('auth')->prefix('restaurant-owner')->name('restaurant-owner.')->group(function () {
+    Route::get('/claim', [\App\Http\Controllers\RestaurantOwnerController::class, 'showClaim'])->name('claim');
+    Route::post('/claim', [\App\Http\Controllers\RestaurantOwnerController::class, 'claim'])->name('claim.store');
+});
+
 // Image routes (authenticated)
 Route::middleware('auth')->group(function () {
     Route::post('/images/upload', [\App\Http\Controllers\ImageController::class, 'upload'])->name('images.upload');
@@ -61,6 +75,12 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     
     // Restaurant management
     Route::get('/restaurants', [\App\Http\Controllers\Admin\AdminController::class, 'restaurants'])->name('restaurants');
+    Route::get('/restaurants/create', [\App\Http\Controllers\Admin\AdminController::class, 'createRestaurant'])->name('restaurants.create');
+    Route::post('/restaurants', [\App\Http\Controllers\Admin\AdminController::class, 'storeRestaurant'])->name('restaurants.store');
+    Route::get('/restaurants/{id}/edit', [\App\Http\Controllers\Admin\AdminController::class, 'editRestaurant'])->name('restaurants.edit');
+    Route::put('/restaurants/{id}', [\App\Http\Controllers\Admin\AdminController::class, 'updateRestaurant'])->name('restaurants.update');
+    Route::delete('/restaurants/{id}', [\App\Http\Controllers\Admin\AdminController::class, 'deleteRestaurant'])->name('restaurants.delete');
+    Route::post('/restaurants/{id}/toggle-status', [\App\Http\Controllers\Admin\AdminController::class, 'toggleRestaurantStatus'])->name('restaurants.toggle-status');
     
     // Review management
     Route::get('/reviews', [\App\Http\Controllers\Admin\AdminController::class, 'reviews'])->name('reviews');

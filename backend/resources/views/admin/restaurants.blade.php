@@ -74,8 +74,8 @@
                         @if($restaurant->owner)
                             <span class="badge badge-info">Owned by {{ $restaurant->owner->name }}</span>
                         @endif
-                        <a href="{{ route('restaurants.show', $restaurant->id) }}" class="text-orange-500 hover:text-orange-600" target="_blank" title="View on site">
-                            <i class="fas fa-external-link-alt"></i>
+                        <a href="{{ route('restaurants.show', $restaurant->id) }}" class="text-orange-500 hover:text-orange-600" title="View on site">
+                            <i class="fas fa-eye"></i>
                         </a>
                         <a href="{{ route('admin.restaurants.edit', $restaurant->id) }}" class="text-blue-500 hover:text-blue-600" title="Edit">
                             <i class="fas fa-edit"></i>
