@@ -63,14 +63,23 @@
                     <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition cursor-pointer" onclick="window.location.href='{{ route('restaurants.show', $restaurant->id) }}'">
                         <div class="relative h-48 bg-gray-200">
                             @php
+                                $imagesCollection = $restaurant->images instanceof \Illuminate\Support\Collection
+                                    ? $restaurant->images
+                                    : $restaurant->images()->get();
                                 $displayImage = null;
-                                if ($restaurant->images && $restaurant->images->isNotEmpty()) {
-                                    $primaryImage = $restaurant->images->where('is_primary', true)->first();
-                                    $displayImage = $primaryImage ?? $restaurant->images->first();
+                                if ($imagesCollection->isNotEmpty()) {
+                                    $primaryImage = $imagesCollection->where('is_primary', true)->first();
+                                    $displayImage = $primaryImage ?? $imagesCollection->first();
                                 }
                             @endphp
                             @if($displayImage)
-                                <img src="{{ image_url($displayImage->path) }}" alt="{{ $restaurant->name }}" class="w-full h-full object-cover">
+                                @php
+                                    $imgPath = $displayImage->path ?? ($displayImage['path'] ?? '');
+                                    $imgUrl = \Illuminate\Support\Str::startsWith($imgPath, ['http://', 'https://'])
+                                        ? $imgPath
+                                        : image_url($imgPath);
+                                @endphp
+                                <img src="{{ $imgUrl }}" alt="{{ $restaurant->name }}" class="w-full h-full object-cover">
                             @else
                                 <div class="w-full h-full flex items-center justify-center bg-gray-200">
                                     <i class="fas fa-utensils text-4xl text-gray-400"></i>
@@ -133,14 +142,23 @@
                     <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition cursor-pointer" onclick="window.location.href='{{ route('restaurants.show', $restaurant->id) }}'">
                         <div class="relative h-48 bg-gray-200">
                             @php
+                                $imagesCollection = $restaurant->images instanceof \Illuminate\Support\Collection
+                                    ? $restaurant->images
+                                    : $restaurant->images()->get();
                                 $displayImage = null;
-                                if ($restaurant->images && $restaurant->images->isNotEmpty()) {
-                                    $primaryImage = $restaurant->images->where('is_primary', true)->first();
-                                    $displayImage = $primaryImage ?? $restaurant->images->first();
+                                if ($imagesCollection->isNotEmpty()) {
+                                    $primaryImage = $imagesCollection->where('is_primary', true)->first();
+                                    $displayImage = $primaryImage ?? $imagesCollection->first();
                                 }
                             @endphp
                             @if($displayImage)
-                                <img src="{{ image_url($displayImage->path) }}" alt="{{ $restaurant->name }}" class="w-full h-full object-cover">
+                                @php
+                                    $imgPath = $displayImage->path ?? ($displayImage['path'] ?? '');
+                                    $imgUrl = \Illuminate\Support\Str::startsWith($imgPath, ['http://', 'https://'])
+                                        ? $imgPath
+                                        : image_url($imgPath);
+                                @endphp
+                                <img src="{{ $imgUrl }}" alt="{{ $restaurant->name }}" class="w-full h-full object-cover">
                             @else
                                 <div class="w-full h-full flex items-center justify-center bg-gray-200">
                                     <i class="fas fa-utensils text-4xl text-gray-400"></i>
@@ -182,7 +200,13 @@
                 @forelse($recentReviews as $review)
                     <div class="bg-white rounded-lg shadow-md p-6">
                         <div class="flex items-center mb-4">
-                            <img src="{{ image_url($review->user->avatar) }}" 
+                            @php
+                                $avatarPath = $review->user->avatar;
+                                $avatarUrl = \Illuminate\Support\Str::startsWith($avatarPath, ['http://', 'https://'])
+                                    ? $avatarPath
+                                    : image_url($avatarPath);
+                            @endphp
+                            <img src="{{ $avatarUrl }}" 
                                  alt="{{ $review->user->name }}" 
                                  class="w-10 h-10 rounded-full mr-3">
                             <div>
