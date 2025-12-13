@@ -145,14 +145,25 @@
                 <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition cursor-pointer" onclick="window.location.href='{{ route('restaurants.show', $restaurant->id) }}'">
                     <div class="relative h-48 bg-gray-200">
                         @php
+                            // Prefer the relation; fall back to cast array only if relation missing
+                            $imagesCollection = $restaurant->images instanceof \Illuminate\Support\Collection
+                                ? $restaurant->images
+                                : $restaurant->images()->get();
+
                             $displayImage = null;
-                            if ($restaurant->images && $restaurant->images->isNotEmpty()) {
-                                $primaryImage = $restaurant->images->where('is_primary', true)->first();
-                                $displayImage = $primaryImage ?? $restaurant->images->first();
+                            if ($imagesCollection->isNotEmpty()) {
+                                $primaryImage = $imagesCollection->where('is_primary', true)->first();
+                                $displayImage = $primaryImage ?? $imagesCollection->first();
                             }
                         @endphp
                         @if($displayImage)
-                            <img src="{{ image_url($displayImage->path) }}" alt="{{ $restaurant->name }}" class="w-full h-full object-cover">
+                            @php
+                                $imgPath = $displayImage->path ?? ($displayImage['path'] ?? '');
+                                $imgUrl = \Illuminate\Support\Str::startsWith($imgPath, ['http://', 'https://'])
+                                    ? $imgPath
+                                    : image_url($imgPath);
+                            @endphp
+                            <img src="{{ $imgUrl }}" alt="{{ $restaurant->name }}" class="w-full h-full object-cover">
                         @else
                             <div class="w-full h-full flex items-center justify-center bg-gray-200">
                                 <i class="fas fa-utensils text-4xl text-gray-400"></i>
@@ -199,6 +210,34 @@
         </div>
     </div>
 @endsection
+
+@php
+    $debugRestaurantImages = $restaurants->map(function($r) {
+        $images = $r->images instanceof \Illuminate\Support\Collection ? $r->images : $r->images()->get();
+        $primary = $images->where('is_primary', true)->first();
+        $first = $images->first();
+        return [
+            'id' => $r->id,
+            'name' => $r->name,
+            'primary_path' => $primary->path ?? ($primary['path'] ?? null),
+            'first_path' => $first->path ?? ($first['path'] ?? null),
+            'images_count' => $images->count(),
+        ];
+    })->values();
+@endphp
+
+@push('scripts')
+<script>
+    (function() {
+        try {
+            const restaurantImages = @json($debugRestaurantImages);
+            console.log('[ImageDebug] Restaurant list images', restaurantImages);
+        } catch (e) {
+            console.warn('[ImageDebug] Failed to log restaurant images', e);
+        }
+    })();
+</script>
+@endpush
 
 @push('scripts')
 <script>

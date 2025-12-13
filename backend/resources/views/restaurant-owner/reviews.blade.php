@@ -33,7 +33,13 @@
             @forelse($reviews as $review)
             <div class="border-b border-gray-200 pb-6 mb-6 last:border-0 last:pb-0 last:mb-0">
                 <div class="flex items-start">
-                    <img src="{{ image_url($review->user->avatar) }}" alt="{{ $review->user->name }}" class="w-12 h-12 rounded-full mr-4">
+                    @php
+                        $avatarPath = $review->user->avatar;
+                        $avatarUrl = \Illuminate\Support\Str::startsWith($avatarPath, ['http://', 'https://'])
+                            ? $avatarPath
+                            : image_url($avatarPath);
+                    @endphp
+                    <img src="{{ $avatarUrl }}" alt="{{ $review->user->name }}" class="w-12 h-12 rounded-full mr-4">
                     <div class="flex-1">
                         <div class="flex items-center justify-between mb-2">
                             <div>
