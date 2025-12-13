@@ -62,7 +62,13 @@
                 @forelse($recentUsers->take(3) as $user)
                     <div class="flex items-center justify-between py-2 border-b border-gray-100">
                         <div class="flex items-center">
-                            <img src="{{ image_url($user->avatar) }}" 
+                            @php
+                                $avatarPath = $user->avatar;
+                                $avatarUrl = \Illuminate\Support\Str::startsWith($avatarPath, ['http://', 'https://'])
+                                    ? $avatarPath
+                                    : image_url($avatarPath);
+                            @endphp
+                            <img src="{{ $avatarUrl }}" 
                                  alt="{{ $user->name }}" 
                                  class="w-8 h-8 rounded-full mr-3">
                             <div>

@@ -55,7 +55,13 @@
                                 <span class="text-sm font-semibold text-gray-800">{{ Auth::user()->name }}</span>
                                 <span class="text-xs text-gray-500">{{ Auth::user()->email }}</span>
                             </div>
-                            <img src="{{ image_url(Auth::user()->avatar) }}" alt="User Avatar" class="w-8 h-8 rounded-full object-cover border-2 border-orange-500">
+                        @php
+                            $avatarPath = Auth::user()->avatar;
+                            $avatarUrl = \Illuminate\Support\Str::startsWith($avatarPath, ['http://', 'https://'])
+                                ? $avatarPath
+                                : image_url($avatarPath);
+                        @endphp
+                        <img src="{{ $avatarUrl }}" alt="User Avatar" class="w-8 h-8 rounded-full object-cover border-2 border-orange-500">
                             <i class="fas fa-chevron-down text-gray-400 text-xs"></i>
                         </button>
                         
@@ -136,7 +142,13 @@
                             <span class="text-sm font-semibold text-gray-800">{{ Auth::user()->name }}</span>
                             <span class="text-xs text-gray-500">{{ Auth::user()->email }}</span>
                         </div>
-                        <img src="{{ image_url(Auth::user()->avatar) }}" alt="User Avatar" class="w-10 h-10 rounded-full object-cover border-2 border-orange-500">
+                        @php
+                            $avatarPath = Auth::user()->avatar;
+                            $avatarUrl = \Illuminate\Support\Str::startsWith($avatarPath, ['http://', 'https://'])
+                                ? $avatarPath
+                                : image_url($avatarPath);
+                        @endphp
+                        <img src="{{ $avatarUrl }}" alt="User Avatar" class="w-10 h-10 rounded-full object-cover border-2 border-orange-500">
                     </div>
                     <div class="space-y-2">
                         <a href="{{ route('profile.show') }}" class="block text-gray-600 hover:text-orange-500 text-sm">Profile</a>
