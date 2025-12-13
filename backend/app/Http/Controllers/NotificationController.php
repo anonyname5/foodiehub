@@ -37,31 +37,65 @@ class NotificationController extends Controller
      */
     public function recent()
     {
-        $notifications = Auth::user()->notifications()->take(5)->get();
-        return response()->json($notifications);
+        $notifications = Auth::user()->notifications()->take(10)->get();
+        
+        // Format notifications for JSON response
+        $formatted = $notifications->map(function ($notification) {
+            return [
+                'id' => $notification->id,
+                'type' => $notification->data['type'] ?? 'general',
+                'message' => $notification->data['message'] ?? 'New notification',
+                'url' => $notification->data['url'] ?? null,
+                'read_at' => $notification->read_at,
+                'created_at' => $notification->created_at->toIso8601String(),
+                'created_at_human' => $notification->created_at->diffForHumans(),
+            ];
+        });
+        
+        return response()->json([
+            'notifications' => $formatted,
+            'unread_count' => Auth::user()->unreadNotifications()->count()
+        ]);
     }
 
     /**
      * Mark notification as read
      */
-    public function markAsRead($id)
+    public function markAsRead(Request $request, $id)
     {
         $notification = Auth::user()->notifications()->find($id);
         
         if ($notification) {
             $notification->markAsRead();
-            return response()->json(['success' => true]);
+            
+            if ($request->expectsJson()) {
+                return response()->json(['success' => true]);
+            }
+            
+            return redirect()->route('notifications.index')
+                ->with('success', 'Notification marked as read');
         }
         
-        return response()->json(['success' => false], 404);
+        if ($request->expectsJson()) {
+            return response()->json(['success' => false], 404);
+        }
+        
+        return redirect()->route('notifications.index')
+            ->with('error', 'Notification not found');
     }
 
     /**
      * Mark all notifications as read
      */
-    public function markAllAsRead()
+    public function markAllAsRead(Request $request)
     {
         Auth::user()->unreadNotifications->markAsRead();
-        return response()->json(['success' => true]);
+        
+        if ($request->expectsJson()) {
+            return response()->json(['success' => true]);
+        }
+        
+        return redirect()->route('notifications.index')
+            ->with('success', 'All notifications marked as read');
     }
 }

@@ -34,7 +34,13 @@
                     <div class="flex items-start justify-between mb-2">
                         <div class="flex-1">
                             <div class="flex items-center mb-2">
-                                <img src="{{ image_url($review->user->avatar) }}" 
+                                @php
+                                    $avatarPath = $review->user->avatar;
+                                    $avatarUrl = \Illuminate\Support\Str::startsWith($avatarPath, ['http://', 'https://'])
+                                        ? $avatarPath
+                                        : image_url($avatarPath);
+                                @endphp
+                                <img src="{{ $avatarUrl }}" 
                                      alt="{{ $review->user->name }}" 
                                      class="w-10 h-10 rounded-full mr-3">
                                 <div>

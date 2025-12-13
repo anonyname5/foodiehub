@@ -137,7 +137,13 @@
                 @foreach($recentReviews as $review)
                 <div class="border-b border-gray-200 pb-4 last:border-0 last:pb-0">
                     <div class="flex items-start">
-                        <img src="{{ image_url($review->user->avatar) }}" alt="{{ $review->user->name }}" class="w-10 h-10 rounded-full mr-3">
+                        @php
+                            $avatarPath = $review->user->avatar;
+                            $avatarUrl = \Illuminate\Support\Str::startsWith($avatarPath, ['http://', 'https://'])
+                                ? $avatarPath
+                                : image_url($avatarPath);
+                        @endphp
+                        <img src="{{ $avatarUrl }}" alt="{{ $review->user->name }}" class="w-10 h-10 rounded-full mr-3">
                         <div class="flex-1">
                             <div class="flex items-center justify-between">
                                 <div>

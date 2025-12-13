@@ -2,6 +2,7 @@
     display: grid;
     grid-template-columns: 260px 1fr;
     min-height: 100vh;
+    position: relative;
 }
 
 .admin-sidebar {
@@ -10,6 +11,38 @@
     display: flex;
     flex-direction: column;
     padding: 20px;
+    overflow-y: auto;
+}
+
+.sidebar-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 40;
+    transition: opacity 0.3s ease-in-out;
+}
+
+.mobile-menu-btn {
+    background: none;
+    border: none;
+    padding: 8px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 6px;
+    transition: background 0.2s;
+}
+
+.mobile-menu-btn:hover {
+    background: rgba(0, 0, 0, 0.05);
+}
+
+body.sidebar-open {
+    overflow: hidden;
 }
 
 .admin-brand {
@@ -17,6 +50,23 @@
     align-items: center;
     gap: 10px;
     margin-bottom: 24px;
+    position: relative;
+}
+
+#mobile-sidebar-close {
+    background: none;
+    border: none;
+    padding: 4px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    transition: background 0.2s;
+}
+
+#mobile-sidebar-close:hover {
+    background: rgba(255, 255, 255, 0.1);
 }
 
 .admin-nav {
@@ -67,6 +117,8 @@
 
 .admin-main {
     padding: 24px;
+    width: 100%;
+    min-height: 100vh;
 }
 
 .admin-header {
@@ -145,22 +197,63 @@
     padding: 16px;
 }
 
-@media (max-width: 1024px) {
+@media (min-width: 1024px) {
+    .admin-layout {
+        grid-template-columns: 260px 1fr;
+    }
+    
+    .mobile-menu-btn {
+        display: none;
+    }
+    
+    .sidebar-overlay {
+        display: none !important;
+    }
+}
+
+@media (max-width: 1023px) {
     .admin-layout {
         grid-template-columns: 1fr;
     }
+    
     .admin-sidebar {
-        flex-direction: row;
-        flex-wrap: wrap;
-        gap: 10px;
+        position: fixed;
+        left: 0;
+        top: 0;
+        height: 100vh;
+        width: 260px;
+        z-index: 50;
+        transform: translateX(-100%);
+        transition: transform 0.3s ease-in-out;
     }
-    .admin-nav {
-        flex-direction: row;
-        flex-wrap: wrap;
-        gap: 8px;
+    
+    .admin-sidebar.sidebar-open {
+        transform: translateX(0);
     }
+    
     .admin-main {
         padding: 16px;
+        width: 100%;
+    }
+    
+    .admin-header {
+        flex-wrap: wrap;
+        gap: 12px;
+    }
+    
+    .admin-header h1 {
+        font-size: 1.5rem;
+    }
+    
+    .admin-sidebar-footer {
+        flex-direction: column;
+        gap: 8px;
+        align-items: flex-start;
+    }
+    
+    .logout-btn {
+        width: 100%;
+        text-align: center;
     }
 }
 

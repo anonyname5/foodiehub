@@ -150,15 +150,18 @@ class ImageController extends Controller
     /**
      * Delete an image.
      */
-    public function destroy($id): JsonResponse
+    public function destroy(Request $request, $id)
     {
         $image = Image::find($id);
 
         if (!$image) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Image not found'
-            ], 404);
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Image not found'
+                ], 404);
+            }
+            return redirect()->back()->with('error', 'Image not found');
         }
 
         try {
@@ -168,16 +171,24 @@ class ImageController extends Controller
             // Delete database record
             $image->delete();
 
-            return response()->json([
-                'success' => true,
-                'message' => 'Image deleted successfully'
-            ]);
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Image deleted successfully'
+                ]);
+            }
+            
+            return redirect()->back()->with('success', 'Image deleted successfully');
         } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to delete image',
-                'error' => $e->getMessage()
-            ], 500);
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Failed to delete image',
+                    'error' => $e->getMessage()
+                ], 500);
+            }
+            
+            return redirect()->back()->with('error', 'Failed to delete image: ' . $e->getMessage());
         }
     }
 

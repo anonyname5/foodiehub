@@ -164,7 +164,7 @@ class RestaurantOwnerController extends Controller
             'description' => 'required|string|max:5000',
             'address' => 'required|string|max:500',
             'phone' => 'nullable|string|max:20',
-            'price_range' => 'required|in:$,$$,$$$,$$$$',
+            'price_range' => 'required|in:Budget,Standard,Exclusive,Premium',
             'location' => 'required|string|max:255',
             'latitude' => 'nullable|numeric|between:-90,90',
             'longitude' => 'nullable|numeric|between:-180,180',

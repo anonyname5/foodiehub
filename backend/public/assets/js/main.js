@@ -203,14 +203,8 @@ function setupEventListeners() {
         }
     }
 
-    // Mobile menu toggle
-    const mobileMenuButton = document.getElementById('mobile-menu-btn');
-    const mobileMenu = document.getElementById('mobile-menu');
-    if (mobileMenuButton && mobileMenu) {
-        mobileMenuButton.addEventListener('click', () => {
-            mobileMenu.classList.toggle('hidden');
-        });
-    }
+    // Mobile menu toggle - handled in layout blade file
+    // Keeping this for backwards compatibility but main handler is in layout
 
     // Authentication buttons
     setupAuthEventListeners();

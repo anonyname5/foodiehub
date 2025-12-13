@@ -15,10 +15,13 @@
         <aside class="admin-sidebar">
             <div class="admin-brand">
                 <i class="fas fa-shield-alt text-orange-500 text-2xl"></i>
-                <div>
+                <div class="flex-1">
                     <div class="text-lg font-bold text-gray-800">FoodieHub</div>
                     <div class="text-xs text-gray-500">Admin Panel</div>
                 </div>
+                <button id="mobile-sidebar-close" class="lg:hidden text-gray-400 hover:text-white ml-auto">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
             </div>
             <nav class="admin-nav">
                 <a href="{{ route('admin.dashboard') }}" class="nav-link {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
@@ -46,11 +49,19 @@
             </div>
         </aside>
 
+        <!-- Mobile Sidebar Overlay -->
+        <div id="sidebar-overlay" class="sidebar-overlay hidden"></div>
+
         <main class="admin-main">
             <header class="admin-header">
-                <div>
-                    <h1 class="text-2xl font-bold text-gray-900">@yield('page-title', 'Dashboard')</h1>
-                    <p class="text-sm text-gray-500">@yield('page-description', 'Platform overview')</p>
+                <div class="flex items-center gap-4">
+                    <button id="mobile-menu-toggle" class="mobile-menu-btn lg:hidden">
+                        <i class="fas fa-bars text-gray-700 text-xl"></i>
+                    </button>
+                    <div>
+                        <h1 class="text-2xl font-bold text-gray-900">@yield('page-title', 'Dashboard')</h1>
+                        <p class="text-sm text-gray-500">@yield('page-description', 'Platform overview')</p>
+                    </div>
                 </div>
                 <div class="admin-header-actions">
                     <a href="{{ route('home') }}" class="text-sm text-gray-600 hover:text-orange-500">
@@ -109,6 +120,46 @@
     </div>
 
     <script>
+        // Mobile Sidebar Toggle
+        const mobileMenuToggle = document.getElementById('mobile-menu-toggle');
+        const mobileSidebarClose = document.getElementById('mobile-sidebar-close');
+        const sidebar = document.querySelector('.admin-sidebar');
+        const sidebarOverlay = document.getElementById('sidebar-overlay');
+
+        function toggleSidebar() {
+            sidebar.classList.toggle('sidebar-open');
+            sidebarOverlay.classList.toggle('hidden');
+            document.body.classList.toggle('sidebar-open');
+        }
+
+        function closeSidebar() {
+            sidebar.classList.remove('sidebar-open');
+            sidebarOverlay.classList.add('hidden');
+            document.body.classList.remove('sidebar-open');
+        }
+
+        if (mobileMenuToggle) {
+            mobileMenuToggle.addEventListener('click', toggleSidebar);
+        }
+
+        if (mobileSidebarClose) {
+            mobileSidebarClose.addEventListener('click', closeSidebar);
+        }
+
+        if (sidebarOverlay) {
+            sidebarOverlay.addEventListener('click', closeSidebar);
+        }
+
+        // Close sidebar when clicking on a nav link on mobile
+        const navLinks = document.querySelectorAll('.admin-nav .nav-link');
+        navLinks.forEach(link => {
+            link.addEventListener('click', function() {
+                if (window.innerWidth < 1024) {
+                    closeSidebar();
+                }
+            });
+        });
+
         // Confirmation Modal Handler
         let confirmCallback = null;
         const confirmModal = document.getElementById('confirm-modal');

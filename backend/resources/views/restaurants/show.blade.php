@@ -10,14 +10,25 @@
                 <div class="md:w-1/3">
                     <div class="relative h-64 rounded-lg overflow-hidden">
                         @php
+                            // Prefer relation; fall back to cast array only if relation missing
+                            $imagesCollection = $restaurant->images instanceof \Illuminate\Support\Collection
+                                ? $restaurant->images
+                                : $restaurant->images()->get();
+
                             $displayImage = null;
-                            if ($restaurant->images && $restaurant->images->isNotEmpty()) {
-                                $primaryImage = $restaurant->images->where('is_primary', true)->first();
-                                $displayImage = $primaryImage ?? $restaurant->images->first();
+                            if ($imagesCollection->isNotEmpty()) {
+                                $primaryImage = $imagesCollection->where('is_primary', true)->first();
+                                $displayImage = $primaryImage ?? $imagesCollection->first();
                             }
                         @endphp
                         @if($displayImage)
-                            <img src="{{ image_url($displayImage->path) }}" alt="{{ $restaurant->name }}" class="w-full h-full object-cover">
+                            @php
+                                $imgPath = $displayImage->path ?? ($displayImage['path'] ?? '');
+                                $imgUrl = \Illuminate\Support\Str::startsWith($imgPath, ['http://', 'https://'])
+                                    ? $imgPath
+                                    : image_url($imgPath);
+                            @endphp
+                            <img src="{{ $imgUrl }}" alt="{{ $restaurant->name }}" class="w-full h-full object-cover">
                         @else
                             <div class="w-full h-full flex items-center justify-center bg-gray-200">
                                 <i class="fas fa-utensils text-6xl text-gray-400"></i>
@@ -46,7 +57,7 @@
                             <i class="fas fa-map-marker-alt text-orange-500 mr-2"></i>{{ $restaurant->location }}
                         </p>
                         <p class="text-gray-600">
-                            <i class="fas fa-dollar-sign text-orange-500 mr-2"></i>{{ $restaurant->price_range }}
+                            <i class="fas fa-tag text-orange-500 mr-2"></i>{{ $restaurant->price_range }}
                         </p>
                         @if($restaurant->address)
                         <p class="text-gray-600">
@@ -90,6 +101,44 @@
             </div>
         </div>
     </div>
+
+    <!-- Photo Gallery -->
+    @php
+        $galleryImages = $imagesCollection ?? (
+            ($restaurant->images instanceof \Illuminate\Support\Collection)
+                ? $restaurant->images
+                : $restaurant->images()->get()
+        );
+    @endphp
+    @if($galleryImages && $galleryImages->count() > 0)
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div class="bg-white rounded-lg shadow-md p-6">
+            <div class="flex items-center justify-between mb-4">
+                <h2 class="text-2xl font-bold text-gray-800">Photo Gallery</h2>
+                <span class="text-sm text-gray-500">{{ $galleryImages->count() }} photos</span>
+            </div>
+            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                @foreach($galleryImages as $image)
+                    @php
+                        $imgPath = $image->path ?? ($image['path'] ?? '');
+                        $imgUrl = \Illuminate\Support\Str::startsWith($imgPath, ['http://', 'https://'])
+                            ? $imgPath
+                            : image_url($imgPath);
+                    @endphp
+                    <div class="relative group cursor-pointer" onclick="openImageModal('{{ $imgUrl }}')">
+                        <img src="{{ $imgUrl }}" alt="Restaurant Image" class="w-full h-32 object-cover rounded-lg shadow-sm group-hover:opacity-75 transition-opacity">
+                        <div class="absolute inset-0 bg-black bg-opacity-25 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity rounded-lg">
+                            <i class="fas fa-search-plus text-white text-2xl"></i>
+                        </div>
+                        @if(($image->is_primary ?? ($image['is_primary'] ?? false)))
+                            <span class="absolute top-2 left-2 bg-orange-500 text-white text-xs font-semibold px-2 py-1 rounded-full">Primary</span>
+                        @endif
+                    </div>
+                @endforeach
+            </div>
+        </div>
+    </div>
+    @endif
 
     <!-- Rating Breakdown -->
     @if($ratingBreakdown)
@@ -153,13 +202,34 @@
                         @if($restaurant->hours)
                             @php
                                 $hours = is_string($restaurant->hours) ? json_decode($restaurant->hours, true) : $restaurant->hours;
+                                $dayLabels = [
+                                    'monday' => 'Monday',
+                                    'tuesday' => 'Tuesday',
+                                    'wednesday' => 'Wednesday',
+                                    'thursday' => 'Thursday',
+                                    'friday' => 'Friday',
+                                    'saturday' => 'Saturday',
+                                    'sunday' => 'Sunday',
+                                ];
                             @endphp
                             @if(is_array($hours) && count($hours) > 0)
-                                @foreach($hours as $day => $time)
-                                <div class="flex justify-between items-center py-2 border-b border-gray-100 last:border-0">
-                                    <span class="font-semibold text-gray-800 capitalize">{{ $day }}</span>
-                                    <span class="text-gray-600 font-mono text-sm bg-gray-100 px-3 py-1 rounded-md">{{ $time }}</span>
-                                </div>
+                                @foreach($dayLabels as $dayKey => $dayLabel)
+                                    @php
+                                        $time = $hours[$dayKey] ?? null;
+                                        $isClosed = is_array($time) && !empty($time['closed']);
+                                        $open = is_array($time) ? ($time['open'] ?? '') : '';
+                                        $close = is_array($time) ? ($time['close'] ?? '') : '';
+                                    @endphp
+                                    <div class="flex justify-between items-center py-2 border-b border-gray-100 last:border-0">
+                                        <span class="font-semibold text-gray-800">{{ $dayLabel }}</span>
+                                        @if($isClosed)
+                                            <span class="text-gray-500 italic">Closed</span>
+                                        @elseif($open && $close)
+                                            <span class="text-gray-600 font-mono text-sm bg-gray-100 px-3 py-1 rounded-md">{{ $open }} - {{ $close }}</span>
+                                        @else
+                                            <span class="text-gray-500 italic">Not set</span>
+                                        @endif
+                                    </div>
                                 @endforeach
                             @elseif(is_string($restaurant->hours))
                                 <p class="text-gray-600">{{ $restaurant->hours }}</p>
@@ -291,7 +361,13 @@
             <div class="bg-white rounded-lg shadow-md p-6 mb-6">
                 <div class="flex items-start justify-between mb-4">
                     <div class="flex items-center">
-                        <img src="{{ image_url($review->user->avatar) }}" 
+                        @php
+                            $avatarPath = $review->user->avatar;
+                            $avatarUrl = \Illuminate\Support\Str::startsWith($avatarPath, ['http://', 'https://'])
+                                ? $avatarPath
+                                : image_url($avatarPath);
+                        @endphp
+                        <img src="{{ $avatarUrl }}" 
                              alt="{{ $review->user->name }}" 
                              class="w-12 h-12 rounded-full mr-4">
                         <div>
@@ -432,8 +508,27 @@
 </style>
 @endpush
 
+@php
+    $debugShowImages = ($restaurant->images instanceof \Illuminate\Support\Collection ? $restaurant->images : collect($restaurant->images))
+        ->map(function($img) {
+            return [
+                'id' => $img->id ?? ($img['id'] ?? null),
+                'path' => $img->path ?? ($img['path'] ?? null),
+                'is_primary' => $img->is_primary ?? ($img['is_primary'] ?? null),
+            ];
+        })->values();
+@endphp
+
 @push('scripts')
 <script>
+    // Debug restaurant images
+    try {
+        const imagesCollection = @json($debugShowImages);
+        console.log('[ImageDebug] Restaurant show images', imagesCollection);
+    } catch (e) {
+        console.warn('[ImageDebug] Failed to log restaurant images', e);
+    }
+
     function toggleHelpful(reviewId) {
         fetch(`/reviews/${reviewId}/helpful`, {
             method: 'POST',

@@ -5,9 +5,12 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use App\Models\User;
 use App\Models\Restaurant;
 use App\Models\Review;
+use App\Models\Image;
 
 class AdminController extends Controller
 {
@@ -231,7 +234,7 @@ class AdminController extends Controller
             'description' => 'required|string|max:5000',
             'address' => 'required|string|max:500',
             'phone' => 'nullable|string|max:20',
-            'price_range' => 'required|in:$,$$,$$$,$$$$',
+            'price_range' => 'required|in:Budget,Standard,Exclusive,Premium',
             'location' => 'required|string|max:255',
             'latitude' => 'nullable|numeric|between:-90,90',
             'longitude' => 'nullable|numeric|between:-180,180',
@@ -239,9 +242,37 @@ class AdminController extends Controller
             'features' => 'nullable|array',
             'is_active' => 'sometimes|boolean',
             'owner_id' => 'nullable|exists:users,id',
+            'images' => 'nullable|array|max:10',
+            'images.*' => 'image|mimes:jpeg,png,jpg,gif,webp|max:5120', // 5MB max per image
         ]);
 
         $restaurant = Restaurant::create($validated);
+
+        // Handle image uploads
+        if ($request->hasFile('images')) {
+            foreach ($request->file('images') as $index => $file) {
+                try {
+                    $extension = $file->getClientOriginalExtension();
+                    $filename = Str::uuid() . '.' . $extension;
+                    $storedPath = $file->storeAs('public/restaurants', $filename);
+
+                    Image::create([
+                        'imageable_id' => $restaurant->id,
+                        'imageable_type' => Restaurant::class,
+                        'filename' => $filename,
+                        'original_name' => $file->getClientOriginalName(),
+                        'mime_type' => $file->getMimeType(),
+                        'size' => $file->getSize(),
+                        'path' => 'restaurants/' . $filename,
+                        'url' => Storage::url($storedPath),
+                        'is_primary' => $index === 0, // First image is primary
+                        'sort_order' => $index,
+                    ]);
+                } catch (\Exception $e) {
+                    \Log::error('Failed to upload restaurant image: ' . $e->getMessage());
+                }
+            }
+        }
 
         // If owner_id is provided, link the user to the restaurant
         if ($request->has('owner_id') && $request->owner_id) {
@@ -259,7 +290,7 @@ class AdminController extends Controller
      */
     public function editRestaurant($id)
     {
-        $restaurant = Restaurant::with('owner')->findOrFail($id);
+        $restaurant = Restaurant::with(['owner', 'images'])->findOrFail($id);
         $owners = User::where('is_admin', false)
                      ->where(function($q) use ($id) {
                          $q->whereNull('restaurant_id')->orWhere('restaurant_id', $id);
@@ -282,7 +313,7 @@ class AdminController extends Controller
             'description' => 'required|string|max:5000',
             'address' => 'required|string|max:500',
             'phone' => 'nullable|string|max:20',
-            'price_range' => 'required|in:$,$$,$$$,$$$$',
+            'price_range' => 'required|in:Budget,Standard,Exclusive,Premium',
             'location' => 'required|string|max:255',
             'latitude' => 'nullable|numeric|between:-90,90',
             'longitude' => 'nullable|numeric|between:-180,180',
@@ -290,6 +321,8 @@ class AdminController extends Controller
             'features' => 'nullable|array',
             'is_active' => 'sometimes|boolean',
             'owner_id' => 'nullable|exists:users,id',
+            'images' => 'nullable|array|max:10',
+            'images.*' => 'image|mimes:jpeg,png,jpg,gif,webp|max:5120', // 5MB max per image
         ]);
 
         // Handle owner change
@@ -312,6 +345,35 @@ class AdminController extends Controller
         }
 
         $restaurant->update($validated);
+
+        // Handle new image uploads
+        if ($request->hasFile('images')) {
+            $existingImagesCount = $restaurant->images()->count();
+            $hasPrimary = $restaurant->images()->where('is_primary', true)->exists();
+            
+            foreach ($request->file('images') as $index => $file) {
+                try {
+                    $extension = $file->getClientOriginalExtension();
+                    $filename = Str::uuid() . '.' . $extension;
+                    $storedPath = $file->storeAs('public/restaurants', $filename);
+
+                    Image::create([
+                        'imageable_id' => $restaurant->id,
+                        'imageable_type' => Restaurant::class,
+                        'filename' => $filename,
+                        'original_name' => $file->getClientOriginalName(),
+                        'mime_type' => $file->getMimeType(),
+                        'size' => $file->getSize(),
+                        'path' => 'restaurants/' . $filename,
+                        'url' => Storage::url($storedPath),
+                        'is_primary' => !$hasPrimary && $index === 0, // First new image is primary if no primary exists
+                        'sort_order' => $existingImagesCount + $index,
+                    ]);
+                } catch (\Exception $e) {
+                    \Log::error('Failed to upload restaurant image: ' . $e->getMessage());
+                }
+            }
+        }
 
         return redirect()->route('admin.restaurants')
                         ->with('success', 'Restaurant updated successfully!');
@@ -372,11 +434,23 @@ class AdminController extends Controller
      */
     public function approveReview($id)
     {
-        $review = Review::findOrFail($id);
+        $review = Review::with('restaurant.owner')->findOrFail($id);
+        
+        // Only send notification if review was previously pending (not already approved)
+        $wasPending = $review->status === 'pending';
+        
         $review->update([
             'status' => 'approved',
             'approved_at' => now()
         ]);
+
+        // Update restaurant statistics (only count approved reviews)
+        $review->restaurant->updateRatingStats();
+
+        // Send notification to restaurant owner only after approval
+        if ($wasPending && $review->restaurant && $review->restaurant->owner) {
+            $review->restaurant->owner->notify(new \App\Notifications\NewReviewNotification($review));
+        }
 
         return back()->with('success', 'Review approved successfully');
     }
@@ -386,11 +460,21 @@ class AdminController extends Controller
      */
     public function rejectReview($id)
     {
-        $review = Review::findOrFail($id);
+        $review = Review::with('restaurant')->findOrFail($id);
+        
+        // Check if review was previously approved (so we need to update stats)
+        $wasApproved = $review->status === 'approved';
+        
         $review->update([
             'status' => 'rejected',
             'rejected_at' => now()
         ]);
+
+        // Update restaurant statistics if review was previously approved
+        // (to remove it from the count and recalculate average)
+        if ($wasApproved) {
+            $review->restaurant->updateRatingStats();
+        }
 
         return back()->with('success', 'Review rejected successfully');
     }

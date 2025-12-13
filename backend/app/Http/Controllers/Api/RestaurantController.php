@@ -84,10 +84,22 @@ class RestaurantController extends Controller
                 $query->orderBy('created_at', 'asc');
                 break;
             case 'price_low':
-                $query->orderByRaw("LENGTH(price_range) ASC");
+                $query->orderByRaw("CASE price_range 
+                    WHEN 'Budget' THEN 1 
+                    WHEN 'Standard' THEN 2 
+                    WHEN 'Exclusive' THEN 3 
+                    WHEN 'Premium' THEN 4 
+                    ELSE 5 
+                END ASC");
                 break;
             case 'price_high':
-                $query->orderByRaw("LENGTH(price_range) DESC");
+                $query->orderByRaw("CASE price_range 
+                    WHEN 'Budget' THEN 1 
+                    WHEN 'Standard' THEN 2 
+                    WHEN 'Exclusive' THEN 3 
+                    WHEN 'Premium' THEN 4 
+                    ELSE 5 
+                END DESC");
                 break;
             default:
                 $query->orderBy('average_rating', 'desc');

@@ -42,14 +42,25 @@
                 <div class="flex items-center justify-between py-4">
                     <div class="flex items-center flex-1">
                         @php
+                            // Prefer relation; fall back to cast array only if relation missing
+                            $imagesCollection = $restaurant->images instanceof \Illuminate\Support\Collection
+                                ? $restaurant->images
+                                : $restaurant->images()->get();
+
                             $displayImage = null;
-                            if ($restaurant->images && $restaurant->images->isNotEmpty()) {
-                                $primaryImage = $restaurant->images->where('is_primary', true)->first();
-                                $displayImage = $primaryImage ?? $restaurant->images->first();
+                            if ($imagesCollection->isNotEmpty()) {
+                                $primaryImage = $imagesCollection->where('is_primary', true)->first();
+                                $displayImage = $primaryImage ?? $imagesCollection->first();
                             }
                         @endphp
                         @if($displayImage)
-                            <img src="{{ image_url($displayImage->path) }}" alt="{{ $restaurant->name }}" 
+                            @php
+                                $imgPath = $displayImage->path ?? ($displayImage['path'] ?? '');
+                                $imgUrl = \Illuminate\Support\Str::startsWith($imgPath, ['http://', 'https://'])
+                                    ? $imgPath
+                                    : image_url($imgPath);
+                            @endphp
+                            <img src="{{ $imgUrl }}" alt="{{ $restaurant->name }}" 
                                  class="w-16 h-16 rounded-lg object-cover mr-4">
                         @else
                             <div class="w-16 h-16 rounded-lg bg-gray-200 flex items-center justify-center mr-4">

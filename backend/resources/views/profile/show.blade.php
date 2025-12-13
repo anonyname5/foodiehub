@@ -11,7 +11,13 @@
             <div class="lg:col-span-1">
                 <div class="bg-white rounded-lg shadow-md p-6 sticky top-24">
                     <div class="text-center mb-6">
-                        <img src="{{ image_url($user->avatar) }}" 
+                        @php
+                            $avatarPath = $user->avatar;
+                            $avatarUrl = \Illuminate\Support\Str::startsWith($avatarPath, ['http://', 'https://'])
+                                ? $avatarPath
+                                : image_url($avatarPath);
+                        @endphp
+                        <img src="{{ $avatarUrl }}" 
                              alt="{{ $user->name }}" 
                              class="w-20 h-20 rounded-full object-cover mx-auto mb-4 border-4 border-orange-500 shadow-md">
                         <h3 class="text-lg font-semibold text-gray-800">{{ $user->name }}</h3>
@@ -47,10 +53,29 @@
                 <!-- Profile Settings -->
                 <div class="bg-white rounded-lg shadow-md p-6 mb-8">
                     <h2 class="text-xl font-semibold text-gray-800 mb-4">Profile Settings</h2>
-                    <form action="{{ route('profile.update') }}" method="POST">
+                    <form action="{{ route('profile.update') }}" method="POST" enctype="multipart/form-data">
                         @csrf
                         @method('PUT')
                         
+                        <div class="mb-4">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Profile Photo</label>
+                            <div class="flex items-center gap-4">
+                                <div class="w-16 h-16 rounded-full overflow-hidden border-2 border-orange-200 bg-gray-100">
+                                    <img id="avatar-preview" src="{{ $avatarUrl }}" alt="Avatar preview" class="w-full h-full object-cover">
+                                </div>
+                                <div class="flex flex-col gap-2">
+                                    <label class="inline-flex items-center px-4 py-2 bg-orange-500 text-white rounded-lg cursor-pointer hover:bg-orange-600 text-sm">
+                                        <i class="fas fa-upload mr-2"></i>Choose Photo
+                                        <input type="file" name="avatar" id="avatar" accept="image/*" class="hidden" onchange="previewAvatar(this)">
+                                    </label>
+                                    <p class="text-xs text-gray-500">PNG, JPG, GIF, WEBP up to 5MB</p>
+                                    @error('avatar')
+                                        <p class="text-red-500 text-sm">{{ $message }}</p>
+                                    @enderror
+                                </div>
+                            </div>
+                        </div>
+
                         <div class="mb-4">
                             <label for="name" class="block text-sm font-medium text-gray-700 mb-2">Name</label>
                             <input type="text" name="name" id="name" value="{{ old('name', $user->name) }}" required
@@ -129,4 +154,19 @@
         </div>
     </div>
 @endsection
+
+@push('scripts')
+<script>
+    function previewAvatar(input) {
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const img = document.getElementById('avatar-preview');
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+</script>
+@endpush
 
