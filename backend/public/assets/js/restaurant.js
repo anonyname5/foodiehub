@@ -266,15 +266,17 @@ function applySorting() {
             break;
         case 'price-low':
             filteredRestaurants.sort((a, b) => {
-                const priceA = (a.price_range || '$$').length;
-                const priceB = (b.price_range || '$$').length;
+                const priceOrder = { 'Budget': 1, 'Standard': 2, 'Exclusive': 3, 'Premium': 4 };
+                const priceA = priceOrder[a.price_range] || 5;
+                const priceB = priceOrder[b.price_range] || 5;
                 return priceA - priceB;
             });
             break;
         case 'price-high':
             filteredRestaurants.sort((a, b) => {
-                const priceA = (a.price_range || '$$').length;
-                const priceB = (b.price_range || '$$').length;
+                const priceOrder = { 'Budget': 1, 'Standard': 2, 'Exclusive': 3, 'Premium': 4 };
+                const priceA = priceOrder[a.price_range] || 5;
+                const priceB = priceOrder[b.price_range] || 5;
                 return priceB - priceA;
             });
             break;
@@ -364,7 +366,7 @@ function displayGridView(restaurants) {
                 <div class="relative">
                     <img src="${imageUrl}" alt="${restaurant.name}" class="w-full h-48 object-cover">
                     <div class="absolute top-4 right-4 bg-white px-2 py-1 rounded-full text-sm font-semibold text-orange-500">
-                        ${restaurant.price_range || '$$'}
+                        ${restaurant.price_range || 'Standard'}
                     </div>
                     <button class="absolute top-4 left-4 bg-white p-2 rounded-full shadow-md hover:shadow-lg transition-all duration-200 favorite-btn" 
                             data-restaurant-id="${restaurant.id}" onclick="toggleFavorite(${restaurant.id})">
@@ -430,7 +432,7 @@ function displayListView(restaurants) {
                                 <p class="text-gray-700 text-sm">${restaurant.description || 'No description available'}</p>
                             </div>
                             <div class="bg-white px-2 py-1 rounded-full text-sm font-semibold text-orange-500">
-                                ${restaurant.price_range || '$$'}
+                                ${restaurant.price_range || 'Standard'}
                             </div>
                         </div>
                         <div class="flex items-center justify-between">

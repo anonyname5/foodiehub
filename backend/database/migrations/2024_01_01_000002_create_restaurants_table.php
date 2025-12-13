@@ -19,7 +19,7 @@ return new class extends Migration
             $table->string('address');
             $table->string('phone')->nullable();
             $table->json('hours')->nullable(); // Store opening hours as JSON
-            $table->string('price_range', 10); // $, $$, $$$, $$$$
+            $table->string('price_range', 10); // Budget, Standard, Exclusive, Premium
             $table->string('location');
             $table->decimal('latitude', 10, 8)->nullable();
             $table->decimal('longitude', 11, 8)->nullable();

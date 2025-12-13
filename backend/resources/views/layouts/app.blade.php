@@ -41,12 +41,31 @@
                     @else
                     <!-- Notifications Bell -->
                     <div class="notifications-menu relative">
-                        <a href="{{ route('notifications.index') }}" class="relative p-2 text-gray-600 hover:text-orange-500 transition">
+                        <button id="notification-toggle" class="relative p-2 text-gray-600 hover:text-orange-500 transition">
                             <i class="fas fa-bell text-xl"></i>
                             <span id="notification-badge" class="absolute top-0 right-0 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center hidden">
                                 <span id="notification-count">0</span>
                             </span>
-                        </a>
+                        </button>
+                        
+                        <!-- Notifications Dropdown -->
+                        <div id="notifications-dropdown" class="absolute right-0 mt-2 w-80 bg-white rounded-lg shadow-xl border border-gray-200 hidden z-50 max-h-96 overflow-hidden flex flex-col">
+                            <div class="px-4 py-3 border-b border-gray-200 flex items-center justify-between bg-orange-50">
+                                <h3 class="text-sm font-semibold text-gray-900">Notifications</h3>
+                                <button id="mark-all-read-btn" class="text-xs text-orange-600 hover:text-orange-800 hidden">Mark all read</button>
+                            </div>
+                            <div id="notifications-list" class="overflow-y-auto flex-1">
+                                <div class="p-4 text-center text-gray-500">
+                                    <i class="fas fa-spinner fa-spin text-2xl mb-2"></i>
+                                    <p class="text-sm">Loading notifications...</p>
+                                </div>
+                            </div>
+                            <div class="px-4 py-2 border-t border-gray-200 bg-gray-50 text-center">
+                                <a href="{{ route('notifications.index') }}" class="text-sm text-orange-600 hover:text-orange-800 font-medium">
+                                    View all notifications
+                                </a>
+                            </div>
+                        </div>
                     </div>
                     <!-- User Menu -->
                     <div class="user-menu relative">
@@ -112,16 +131,25 @@
                 
                 <!-- Mobile menu button -->
                 <div class="md:hidden">
-                    <button id="mobile-menu-btn" class="text-gray-600 hover:text-orange-500">
-                        <i class="fas fa-bars text-xl"></i>
+                    <button id="mobile-menu-btn" class="text-gray-600 hover:text-orange-500 transition-colors p-2 rounded-lg hover:bg-gray-100">
+                        <i id="mobile-menu-icon" class="fas fa-bars text-xl"></i>
                     </button>
                 </div>
             </div>
         </div>
         
+        <!-- Mobile menu overlay -->
+        <div id="mobile-menu-overlay" class="mobile-menu-overlay hidden"></div>
+        
         <!-- Mobile menu -->
-        <div id="mobile-menu" class="md:hidden bg-white border-t hidden">
-            <div class="px-2 pt-2 pb-3 space-y-1">
+        <div id="mobile-menu" class="mobile-menu md:hidden bg-white hidden">
+            <div class="mobile-menu-header">
+                <span>FoodieHub</span>
+                <button id="mobile-menu-close">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div>
                 <a href="{{ route('home') }}" class="block px-3 py-2 {{ request()->routeIs('home') ? 'text-orange-500 font-semibold' : 'text-gray-600 hover:text-orange-500' }}">Home</a>
                 <a href="{{ route('restaurants.index') }}" class="block px-3 py-2 {{ request()->routeIs('restaurants.*') ? 'text-orange-500 font-semibold' : 'text-gray-600 hover:text-orange-500' }}">Restaurants</a>
                 @auth
@@ -235,7 +263,7 @@
     @guest
     <!-- Login Modal -->
     <div id="login-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center">
-        <div class="bg-white rounded-lg p-8 w-full max-w-md mx-4">
+        <div class="bg-white rounded-lg p-8 w-full max-w-md mx-4 max-h-[90vh] overflow-y-auto">
             <div class="flex justify-between items-center mb-6">
                 <h2 class="text-2xl font-bold text-gray-800">Login</h2>
                 <button id="close-login-modal" class="text-gray-400 hover:text-gray-600">
@@ -243,27 +271,50 @@
                 </button>
             </div>
             
+            <!-- Error Alert -->
+            @if($errors->has('email') || $errors->has('password'))
+            <div id="login-error-alert" class="mb-4 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg flex items-start">
+                <i class="fas fa-exclamation-circle mt-0.5 mr-2"></i>
+                <div class="flex-1">
+                    @if($errors->has('email'))
+                        <p class="font-medium">{{ $errors->first('email') }}</p>
+                    @elseif($errors->has('password'))
+                        <p class="font-medium">{{ $errors->first('password') }}</p>
+                    @endif
+                </div>
+                <button type="button" onclick="document.getElementById('login-error-alert').classList.add('hidden')" class="text-red-700 hover:text-red-900 ml-2">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            @endif
+            
             <form id="login-form" action="{{ route('login') }}" method="POST">
                 @csrf
                 <div class="mb-4">
                     <label for="login-email" class="block text-sm font-medium text-gray-700 mb-2">Email</label>
-                    <input type="email" id="login-email" name="email" required
-                           class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500">
+                    <input type="email" id="login-email" name="email" value="{{ old('email') }}" required
+                           class="w-full px-3 py-2 border {{ $errors->has('email') ? 'border-red-500' : 'border-gray-300' }} rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500">
+                    @error('email')
+                        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                    @enderror
                 </div>
                 
                 <div class="mb-6">
                     <label for="login-password" class="block text-sm font-medium text-gray-700 mb-2">Password</label>
                     <input type="password" id="login-password" name="password" required
-                           class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500">
+                           class="w-full px-3 py-2 border {{ $errors->has('password') ? 'border-red-500' : 'border-gray-300' }} rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500">
+                    @error('password')
+                        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                    @enderror
                 </div>
 
                 <div class="mb-6 flex items-center space-x-2">
-                    <input type="checkbox" id="admin-login" name="admin_login" value="1"
+                    <input type="checkbox" id="admin-login" name="admin_login" value="1" {{ old('admin_login') ? 'checked' : '' }}
                            class="h-4 w-4 text-orange-500 focus:ring-orange-500 border-gray-300 rounded">
                     <label for="admin-login" class="text-sm text-gray-700">Login as admin</label>
                 </div>
                 
-                <button type="submit" class="w-full bg-orange-500 text-white py-2 px-4 rounded-lg hover:bg-orange-600 transition">
+                <button type="submit" id="login-submit-btn" class="w-full bg-orange-500 text-white py-2 px-4 rounded-lg hover:bg-orange-600 transition">
                     Login
                 </button>
             </form>
@@ -352,6 +403,116 @@
     {{-- API.js removed - using monolith approach, no API calls needed --}}
     <script src="{{ asset('assets/js/main.js') }}"></script>
     <script>
+        // Show login modal if there are errors
+        @if($errors->has('email') || $errors->has('password'))
+        document.addEventListener('DOMContentLoaded', function() {
+            const loginModal = document.getElementById('login-modal');
+            if (loginModal) {
+                loginModal.classList.remove('hidden');
+                // Show notification
+                showLoginError('{{ $errors->first('email') ?: $errors->first('password') }}');
+            }
+        });
+        
+        function showLoginError(message) {
+            // Create or update error notification
+            let errorDiv = document.getElementById('login-error-notification');
+            if (!errorDiv) {
+                errorDiv = document.createElement('div');
+                errorDiv.id = 'login-error-notification';
+                errorDiv.className = 'fixed top-4 right-4 bg-red-500 text-white px-6 py-3 rounded-lg shadow-lg z-50 flex items-center space-x-3';
+                document.body.appendChild(errorDiv);
+            }
+            errorDiv.innerHTML = `
+                <i class="fas fa-exclamation-circle"></i>
+                <span>${message}</span>
+                <button onclick="this.parentElement.remove()" class="ml-4 hover:text-red-200">
+                    <i class="fas fa-times"></i>
+                </button>
+            `;
+            
+            // Auto remove after 5 seconds
+            setTimeout(() => {
+                if (errorDiv && errorDiv.parentElement) {
+                    errorDiv.remove();
+                }
+            }, 5000);
+        }
+        @endif
+        
+        // Mobile Menu Toggle
+        const mobileMenuButton = document.getElementById('mobile-menu-btn');
+        const mobileMenuClose = document.getElementById('mobile-menu-close');
+        const mobileMenu = document.getElementById('mobile-menu');
+        const mobileMenuOverlay = document.getElementById('mobile-menu-overlay');
+        const mobileMenuIcon = document.getElementById('mobile-menu-icon');
+
+        function toggleMobileMenu() {
+            const isOpen = !mobileMenu.classList.contains('hidden');
+            if (isOpen) {
+                closeMobileMenu();
+            } else {
+                openMobileMenu();
+            }
+        }
+
+        function openMobileMenu() {
+            // Force reflow to ensure initial state is applied
+            mobileMenu.style.display = 'flex';
+            mobileMenuOverlay.style.display = 'block';
+            
+            // Small delay to trigger animation
+            requestAnimationFrame(() => {
+                mobileMenu.classList.remove('hidden');
+                mobileMenuOverlay.classList.remove('hidden');
+                document.body.classList.add('mobile-menu-open');
+                if (mobileMenuIcon) {
+                    mobileMenuIcon.classList.remove('fa-bars');
+                    mobileMenuIcon.classList.add('fa-times');
+                }
+            });
+        }
+
+        function closeMobileMenu() {
+            mobileMenu.classList.add('hidden');
+            mobileMenuOverlay.classList.add('hidden');
+            document.body.classList.remove('mobile-menu-open');
+            if (mobileMenuIcon) {
+                mobileMenuIcon.classList.remove('fa-times');
+                mobileMenuIcon.classList.add('fa-bars');
+            }
+            
+            // Clean up after animation completes
+            setTimeout(() => {
+                if (mobileMenu.classList.contains('hidden')) {
+                    mobileMenu.style.display = '';
+                    mobileMenuOverlay.style.display = '';
+                }
+            }, 400);
+        }
+
+        if (mobileMenuButton) {
+            mobileMenuButton.addEventListener('click', toggleMobileMenu);
+        }
+
+        if (mobileMenuClose) {
+            mobileMenuClose.addEventListener('click', closeMobileMenu);
+        }
+
+        if (mobileMenuOverlay) {
+            mobileMenuOverlay.addEventListener('click', closeMobileMenu);
+        }
+
+        // Close mobile menu when clicking on a link
+        const mobileMenuLinks = mobileMenu ? mobileMenu.querySelectorAll('a') : [];
+        mobileMenuLinks.forEach(link => {
+            link.addEventListener('click', function() {
+                if (window.innerWidth < 768) {
+                    closeMobileMenu();
+                }
+            });
+        });
+
         // Confirmation Modal Handler
         let confirmCallback = null;
         const confirmModal = document.getElementById('confirm-modal');
@@ -404,6 +565,356 @@
                 });
             }
         });
+
+        // Login form error handling
+        const loginForm = document.getElementById('login-form');
+        if (loginForm) {
+            loginForm.addEventListener('submit', function(e) {
+                const submitBtn = this.querySelector('button[type="submit"]');
+                const emailInput = this.querySelector('#login-email');
+                const passwordInput = this.querySelector('#login-password');
+                
+                // Clear previous error states
+                if (emailInput) {
+                    emailInput.classList.remove('border-red-500');
+                }
+                if (passwordInput) {
+                    passwordInput.classList.remove('border-red-500');
+                }
+                
+                // Remove error alert if exists
+                const errorAlert = document.getElementById('login-error-alert');
+                if (errorAlert) {
+                    errorAlert.classList.add('hidden');
+                }
+                
+                // Basic client-side validation
+                let hasError = false;
+                if (!emailInput || !emailInput.value.trim()) {
+                    if (emailInput) emailInput.classList.add('border-red-500');
+                    hasError = true;
+                }
+                if (!passwordInput || !passwordInput.value) {
+                    if (passwordInput) passwordInput.classList.add('border-red-500');
+                    hasError = true;
+                }
+                
+                if (hasError) {
+                    e.preventDefault();
+                    showLoginError('Please fill in all required fields.');
+                    return false;
+                }
+                
+                // Don't prevent default - let form submit normally to Laravel route
+                // Just add loading state
+                if (submitBtn) {
+                    submitBtn.disabled = true;
+                    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Logging in...';
+                }
+            });
+        }
+
+        // Helper function to show login errors
+        function showLoginError(message) {
+            // Create or update error notification
+            let errorDiv = document.getElementById('login-error-notification');
+            if (!errorDiv) {
+                errorDiv = document.createElement('div');
+                errorDiv.id = 'login-error-notification';
+                errorDiv.className = 'fixed top-4 right-4 bg-red-500 text-white px-6 py-3 rounded-lg shadow-lg z-[60] flex items-center space-x-3 animate-slide-in';
+                document.body.appendChild(errorDiv);
+            }
+            errorDiv.innerHTML = `
+                <i class="fas fa-exclamation-circle"></i>
+                <span>${message}</span>
+                <button onclick="this.parentElement.remove()" class="ml-4 hover:text-red-200">
+                    <i class="fas fa-times"></i>
+                </button>
+            `;
+            
+            // Auto remove after 5 seconds
+            setTimeout(() => {
+                if (errorDiv && errorDiv.parentElement) {
+                    errorDiv.style.opacity = '0';
+                    errorDiv.style.transform = 'translateX(100%)';
+                    setTimeout(() => errorDiv.remove(), 300);
+                }
+            }, 5000);
+        }
+
+        // Notification Dropdown Toggle
+        @auth
+        const notificationToggle = document.getElementById('notification-toggle');
+        const notificationsDropdown = document.getElementById('notifications-dropdown');
+        const notificationsList = document.getElementById('notifications-list');
+        const markAllReadBtn = document.getElementById('mark-all-read-btn');
+
+        // Toggle dropdown
+        if (notificationToggle && notificationsDropdown) {
+            notificationToggle.addEventListener('click', function(e) {
+                e.stopPropagation();
+                const isHidden = notificationsDropdown.classList.contains('hidden');
+                
+                if (isHidden) {
+                    notificationsDropdown.classList.remove('hidden');
+                    loadNotifications();
+                } else {
+                    notificationsDropdown.classList.add('hidden');
+                }
+            });
+        }
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function(e) {
+            if (notificationsDropdown && 
+                !notificationsDropdown.contains(e.target) && 
+                !notificationToggle.contains(e.target)) {
+                notificationsDropdown.classList.add('hidden');
+            }
+        });
+
+        // Load notifications into dropdown
+        function loadNotifications() {
+            if (!notificationsList) return;
+            
+            notificationsList.innerHTML = `
+                <div class="p-4 text-center text-gray-500">
+                    <i class="fas fa-spinner fa-spin text-2xl mb-2"></i>
+                    <p class="text-sm">Loading notifications...</p>
+                </div>
+            `;
+
+            fetch('{{ route("notifications.recent") }}', {
+                method: 'GET',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Accept': 'application/json',
+                },
+                credentials: 'same-origin'
+            })
+            .then(response => response.json())
+            .then(data => {
+                renderNotifications(data.notifications);
+                updateNotificationCount(data.unread_count);
+                
+                // Show/hide mark all read button
+                if (data.unread_count > 0) {
+                    markAllReadBtn.classList.remove('hidden');
+                } else {
+                    markAllReadBtn.classList.add('hidden');
+                }
+            })
+            .catch(error => {
+                console.error('Error loading notifications:', error);
+                notificationsList.innerHTML = `
+                    <div class="p-4 text-center text-red-500">
+                        <i class="fas fa-exclamation-circle text-2xl mb-2"></i>
+                        <p class="text-sm">Failed to load notifications</p>
+                    </div>
+                `;
+            });
+        }
+
+        // Render notifications in dropdown
+        function renderNotifications(notifications) {
+            if (!notificationsList) return;
+            
+            if (notifications.length === 0) {
+                notificationsList.innerHTML = `
+                    <div class="p-8 text-center text-gray-500">
+                        <i class="fas fa-bell-slash text-4xl mb-3 text-gray-300"></i>
+                        <p class="text-sm">No notifications</p>
+                        <p class="text-xs text-gray-400 mt-1">You're all caught up!</p>
+                    </div>
+                `;
+                return;
+            }
+
+            const notificationsHTML = notifications.map(notif => {
+                const isRead = notif.read_at !== null;
+                const iconClass = notif.type === 'new_review' 
+                    ? 'fa-comment text-orange-500' 
+                    : notif.type === 'review_response' 
+                    ? 'fa-reply text-blue-500' 
+                    : 'fa-bell text-gray-400';
+                
+                return `
+                    <div class="notification-item px-4 py-3 border-b border-gray-100 hover:bg-gray-50 transition ${!isRead ? 'bg-orange-50' : ''}" 
+                         data-notification-id="${notif.id}" 
+                         data-url="${notif.url || ''}"
+                         onclick="handleNotificationClick('${notif.id}', '${notif.url || ''}', ${isRead}, this)">
+                        <div class="flex items-start">
+                            <div class="flex-shrink-0 mt-1">
+                                <i class="fas ${iconClass}"></i>
+                            </div>
+                            <div class="ml-3 flex-1 min-w-0">
+                                <p class="text-sm text-gray-900 ${!isRead ? 'font-semibold' : ''}">${escapeHtml(notif.message)}</p>
+                                <p class="text-xs text-gray-500 mt-1">${notif.created_at_human}</p>
+                                ${notif.url ? `<span class="text-xs text-orange-600 mt-1 inline-block">View details →</span>` : ''}
+                            </div>
+                            ${!isRead ? `
+                                <button onclick="event.stopPropagation(); markNotificationAsRead('${notif.id}', this)" 
+                                        class="ml-2 text-gray-400 hover:text-gray-600 p-1 rounded hover:bg-gray-200" 
+                                        title="Mark as read">
+                                    <i class="fas fa-check text-xs"></i>
+                                </button>
+                            ` : ''}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            notificationsList.innerHTML = notificationsHTML;
+        }
+
+        // Handle notification click
+        function handleNotificationClick(notificationId, url, isRead, element) {
+            // Mark as read if unread
+            if (!isRead) {
+                markNotificationAsRead(notificationId, null, false);
+            }
+            
+            // Navigate to URL if available
+            if (url) {
+                window.location.href = url;
+            }
+        }
+
+        // Mark notification as read
+        function markNotificationAsRead(notificationId, buttonElement, reload = true) {
+            fetch(`{{ route('notifications.read', '') }}/${notificationId}`, {
+                method: 'POST',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Accept': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                },
+                credentials: 'same-origin'
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Update the notification item
+                    const notificationItem = buttonElement ? buttonElement.closest('.notification-item') : document.querySelector(`[data-notification-id="${notificationId}"]`);
+                    if (notificationItem) {
+                        notificationItem.classList.remove('bg-orange-50');
+                        const messageElement = notificationItem.querySelector('p.text-gray-900');
+                        if (messageElement) {
+                            messageElement.classList.remove('font-semibold');
+                        }
+                        const checkButton = notificationItem.querySelector('button');
+                        if (checkButton) {
+                            checkButton.remove();
+                        }
+                    }
+                    // Reload notifications to update count
+                    if (reload) {
+                        loadNotifications();
+                    } else {
+                        updateNotificationCount();
+                    }
+                }
+            })
+            .catch(error => {
+                console.error('Error marking notification as read:', error);
+            });
+        }
+
+        // Mark all as read
+        if (markAllReadBtn) {
+            markAllReadBtn.addEventListener('click', function() {
+                fetch('{{ route("notifications.read-all") }}', {
+                    method: 'POST',
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                    },
+                    credentials: 'same-origin'
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        loadNotifications();
+                    }
+                })
+                .catch(error => {
+                    console.error('Error marking all as read:', error);
+                });
+            });
+        }
+
+        // Helper function to escape HTML
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // Update notification count
+        function updateNotificationCount(count) {
+            const badge = document.getElementById('notification-badge');
+            const countElement = document.getElementById('notification-count');
+            
+            if (!badge || !countElement) return;
+            
+            // If count is provided, use it; otherwise fetch from server
+            if (count !== undefined) {
+                if (count > 0) {
+                    countElement.textContent = count > 99 ? '99+' : count;
+                    badge.classList.remove('hidden');
+                } else {
+                    badge.classList.add('hidden');
+                }
+            } else {
+                // Fetch count from server
+                fetch('{{ route("notifications.unread-count") }}', {
+                    method: 'GET',
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Accept': 'application/json',
+                    },
+                    credentials: 'same-origin'
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.count > 0) {
+                        countElement.textContent = data.count > 99 ? '99+' : data.count;
+                        badge.classList.remove('hidden');
+                    } else {
+                        badge.classList.add('hidden');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching notification count:', error);
+                });
+            }
+        }
+
+        // Update notification count on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            fetch('{{ route("notifications.unread-count") }}', {
+                method: 'GET',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Accept': 'application/json',
+                },
+                credentials: 'same-origin'
+            })
+            .then(response => response.json())
+            .then(data => {
+                updateNotificationCount(data.count);
+            })
+            .catch(error => {
+                console.error('Error fetching notification count:', error);
+            });
+        });
+
+        // Make functions available globally
+        window.updateNotificationCount = updateNotificationCount;
+        window.markNotificationAsRead = markNotificationAsRead;
+        window.handleNotificationClick = handleNotificationClick;
+        @endauth
     </script>
     @stack('scripts')
 </body>

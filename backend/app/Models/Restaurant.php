@@ -148,11 +148,13 @@ class Restaurant extends Model
 
     /**
      * Update the restaurant's average rating and review count.
+     * Only counts approved reviews.
      */
     public function updateRatingStats()
     {
-        $this->average_rating = $this->reviews()->avg('overall_rating') ?? 0.00;
-        $this->review_count = $this->reviews()->count();
+        $approvedReviews = $this->reviews()->where('status', 'approved');
+        $this->average_rating = $approvedReviews->avg('overall_rating') ?? 0.00;
+        $this->review_count = $approvedReviews->count();
         $this->save();
     }
 

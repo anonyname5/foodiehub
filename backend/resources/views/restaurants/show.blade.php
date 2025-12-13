@@ -57,7 +57,7 @@
                             <i class="fas fa-map-marker-alt text-orange-500 mr-2"></i>{{ $restaurant->location }}
                         </p>
                         <p class="text-gray-600">
-                            <i class="fas fa-dollar-sign text-orange-500 mr-2"></i>{{ $restaurant->price_range }}
+                            <i class="fas fa-tag text-orange-500 mr-2"></i>{{ $restaurant->price_range }}
                         </p>
                         @if($restaurant->address)
                         <p class="text-gray-600">

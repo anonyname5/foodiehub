@@ -234,7 +234,7 @@ class AdminController extends Controller
             'description' => 'required|string|max:5000',
             'address' => 'required|string|max:500',
             'phone' => 'nullable|string|max:20',
-            'price_range' => 'required|in:$,$$,$$$,$$$$',
+            'price_range' => 'required|in:Budget,Standard,Exclusive,Premium',
             'location' => 'required|string|max:255',
             'latitude' => 'nullable|numeric|between:-90,90',
             'longitude' => 'nullable|numeric|between:-180,180',
@@ -313,7 +313,7 @@ class AdminController extends Controller
             'description' => 'required|string|max:5000',
             'address' => 'required|string|max:500',
             'phone' => 'nullable|string|max:20',
-            'price_range' => 'required|in:$,$$,$$$,$$$$',
+            'price_range' => 'required|in:Budget,Standard,Exclusive,Premium',
             'location' => 'required|string|max:255',
             'latitude' => 'nullable|numeric|between:-90,90',
             'longitude' => 'nullable|numeric|between:-180,180',
@@ -434,11 +434,23 @@ class AdminController extends Controller
      */
     public function approveReview($id)
     {
-        $review = Review::findOrFail($id);
+        $review = Review::with('restaurant.owner')->findOrFail($id);
+        
+        // Only send notification if review was previously pending (not already approved)
+        $wasPending = $review->status === 'pending';
+        
         $review->update([
             'status' => 'approved',
             'approved_at' => now()
         ]);
+
+        // Update restaurant statistics (only count approved reviews)
+        $review->restaurant->updateRatingStats();
+
+        // Send notification to restaurant owner only after approval
+        if ($wasPending && $review->restaurant && $review->restaurant->owner) {
+            $review->restaurant->owner->notify(new \App\Notifications\NewReviewNotification($review));
+        }
 
         return back()->with('success', 'Review approved successfully');
     }
@@ -448,11 +460,21 @@ class AdminController extends Controller
      */
     public function rejectReview($id)
     {
-        $review = Review::findOrFail($id);
+        $review = Review::with('restaurant')->findOrFail($id);
+        
+        // Check if review was previously approved (so we need to update stats)
+        $wasApproved = $review->status === 'approved';
+        
         $review->update([
             'status' => 'rejected',
             'rejected_at' => now()
         ]);
+
+        // Update restaurant statistics if review was previously approved
+        // (to remove it from the count and recalculate average)
+        if ($wasApproved) {
+            $review->restaurant->updateRatingStats();
+        }
 
         return back()->with('success', 'Review rejected successfully');
     }

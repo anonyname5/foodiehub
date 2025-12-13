@@ -37,10 +37,10 @@
                         <select id="price_range" name="price_range" required
                                 class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500">
                             <option value="">Select price range</option>
-                            <option value="$" {{ old('price_range') == '$' ? 'selected' : '' }}>$ - Budget Friendly</option>
-                            <option value="$$" {{ old('price_range') == '$$' ? 'selected' : '' }}>$$ - Moderate</option>
-                            <option value="$$$" {{ old('price_range') == '$$$' ? 'selected' : '' }}>$$$ - Expensive</option>
-                            <option value="$$$$" {{ old('price_range') == '$$$$' ? 'selected' : '' }}>$$$$ - Very Expensive</option>
+                            <option value="Budget" {{ old('price_range') == 'Budget' ? 'selected' : '' }}>Budget</option>
+                            <option value="Standard" {{ old('price_range') == 'Standard' ? 'selected' : '' }}>Standard</option>
+                            <option value="Exclusive" {{ old('price_range') == 'Exclusive' ? 'selected' : '' }}>Exclusive</option>
+                            <option value="Premium" {{ old('price_range') == 'Premium' ? 'selected' : '' }}>Premium</option>
                         </select>
                         @error('price_range')<p class="text-red-500 text-sm mt-1">{{ $message }}</p>@enderror
                     </div>

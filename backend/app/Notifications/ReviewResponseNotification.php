@@ -8,6 +8,7 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
+use Illuminate\Support\Facades\Log;
 
 class ReviewResponseNotification extends Notification implements ShouldQueue
 {
@@ -32,12 +33,44 @@ class ReviewResponseNotification extends Notification implements ShouldQueue
     {
         $channels = ['database'];
         
-        // Add email if user has email notifications enabled
-        if ($notifiable->email_notifications ?? true) {
+        // Add email if user has email notifications enabled AND mail is configured
+        if (($notifiable->email_notifications ?? true) && $this->isMailConfigured()) {
             $channels[] = 'mail';
         }
         
         return $channels;
+    }
+
+    /**
+     * Check if mail is properly configured
+     */
+    private function isMailConfigured(): bool
+    {
+        try {
+            // Check if mail default driver is configured
+            $mailDriver = config('mail.default');
+            if (empty($mailDriver)) {
+                return false;
+            }
+            
+            // Check if mailer configuration exists for the driver
+            $mailerConfig = config("mail.mailers.{$mailDriver}");
+            if (empty($mailerConfig)) {
+                return false;
+            }
+            
+            // Check if from address is configured
+            $fromAddress = config('mail.from.address');
+            if (empty($fromAddress)) {
+                return false;
+            }
+            
+            return true;
+        } catch (\Exception $e) {
+            // If there's any error checking config, assume mail is not configured
+            Log::warning('Mail configuration check failed: ' . $e->getMessage());
+            return false;
+        }
     }
 
     /**
